@@ -1,0 +1,15 @@
+1.2.5-R1_b1
+  CB 1.2.5 R1
+    Initial release
+
+1.2.5-R1_b1b
+  Temporary 'fix' for servers using NoCheat and experiencing players being 'pulled back' due to speed effect.
+    Speed effect will disable itself on servers using NoCheat.
+
+1.2.5-R1_b2
+  Stats changed a tiny bit. Using plugin name instead of JAR name.
+  Command to see plugin version. /pks version
+
+1.2.5-R1_b3
+  Ability for players to change options. /pks opt <opt> <val>
+  Changed options. Uses YML file now.
