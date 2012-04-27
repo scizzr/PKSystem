@@ -13,3 +13,4 @@
 1.2.5-R1_b3
   Ability for players to change options. /pks opt <opt> <val>
   Changed options. Uses YML file now.
+  Configuration GUI (run PKSystem as if it were an executable)

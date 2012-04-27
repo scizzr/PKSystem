@@ -1,5 +1,6 @@
 package com.scizzr.bukkit.plugins.pksystem.wizard;
 
+import com.avaje.ebeaninternal.server.core.JndiDataSourceLookup;
 import com.scizzr.bukkit.plugins.pksystem.config.Config;
 import com.scizzr.bukkit.plugins.pksystem.util.MoreMath;
 import java.awt.Dimension;
@@ -12,6 +13,7 @@ import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.border.TitledBorder;
@@ -145,6 +147,8 @@ public class PanelMain extends JPanel {
 
         saveMain.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent arg0) {
+                JOptionPane.showMessageDialog(null, "This functionality is not yet finished :-)");
+/*
                 YamlConfiguration config = MainFrame.config;
                 config.set("general.prefix", Boolean.valueOf(cmbGenPreEnab.getSelectedItem().toString()));
                 config.set("general.stats", Boolean.valueOf(cmbGebStatsEnab.getSelectedItem().toString()));
@@ -187,6 +191,7 @@ public class PanelMain extends JPanel {
                 } catch (Exception ex) {
                     MainFrame.msg("Could not save config file\n" + MainFrame.fileConfigMain.getAbsoluteFile()); System.exit(0);
                 }
+*/
             }
         });
     }
