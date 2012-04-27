@@ -1,6 +1,5 @@
 package com.scizzr.bukkit.plugins.pksystem.wizard;
 
-import com.avaje.ebeaninternal.server.core.JndiDataSourceLookup;
 import com.scizzr.bukkit.plugins.pksystem.config.Config;
 import com.scizzr.bukkit.plugins.pksystem.util.MoreMath;
 import java.awt.Dimension;
