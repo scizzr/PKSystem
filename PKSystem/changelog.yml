@@ -1,6 +1,6 @@
 1.2.5-R1_b1
   CB 1.2.5 R1
-    Initial release
+  Initial release
 
 1.2.5-R1_b1b
   Temporary 'fix' for servers using NoCheat and experiencing players being 'pulled back' due to speed effect.
@@ -12,5 +12,8 @@
 
 1.2.5-R1_b3
   Ability for players to change options. /pks opt <opt> <val>
-  Changed options. Uses YML file now.
-  Configuration GUI (run PKSystem as if it were an executable)
+  Changed player options. Uses a single YML file now.
+
+1.2.5-R1_b4
+  Configuration GUI in progress (run PKSystem as if it were an executable)
+  Fixed small bug in code resulting in big error.

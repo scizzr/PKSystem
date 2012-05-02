@@ -7,11 +7,13 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import com.scizzr.bukkit.plugins.pksystem.Main;
+
 public class Vault extends JavaPlugin {
     public static Permission permissionHandler = null;
     
     public static boolean setupPermissions() {
-        //if (Main.pm.getPlugin("Vault") != null) {
+        if (Main.pm.getPlugin("Vault") != null) {
             RegisteredServiceProvider<Permission> permissionProvider = Bukkit.getServer().getServicesManager().getRegistration(net.milkbowl.vault.permission.Permission.class);
             
             if (permissionProvider != null) {
@@ -19,8 +21,8 @@ public class Vault extends JavaPlugin {
             }
             
             return (permissionHandler != null);
-        //}
-        //return false;
+        }
+        return false;
     }
     
     public static boolean hasPermission(Player p, String perm) {

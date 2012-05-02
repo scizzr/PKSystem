@@ -86,7 +86,7 @@ public class Players implements Listener {
         
         if (e.getAction() == Action.LEFT_CLICK_BLOCK) {
             Integer rad = Bukkit.getSpawnRadius();
-            Location spawn = Bukkit.getWorld("world").getSpawnLocation();
+            Location spawn = p.getWorld().getSpawnLocation();
             Block b = e.getClickedBlock();
             
             if ((p.getLocation().distance(spawn) <= rad && !p.isOp()) || Config.behClaim.equalsIgnoreCase("click")) {

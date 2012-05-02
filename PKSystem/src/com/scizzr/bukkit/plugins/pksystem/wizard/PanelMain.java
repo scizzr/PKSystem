@@ -20,18 +20,18 @@ import org.bukkit.configuration.file.YamlConfiguration;
 
 public class PanelMain extends JPanel {
     private static final long serialVersionUID = 1L;
-
+    
     public PanelMain() {
         Dimension size = getPreferredSize();
         size.width = 250;
         size.height = 700;
         setPreferredSize(size);
-
+        
         setBorder(new TitledBorder(
                 BorderFactory.createTitledBorder("MAIN CONFIG")));
-
+        
         String[] sTrueFalse = { "True", "False" };
-
+        
         JLabel lblGenPreEnab = new JLabel("Prefix");
         JLabel lblGebStatsEnab = new JLabel("Stats");
         JLabel lblGenVerEnab = new JLabel("VerCheck");
@@ -55,7 +55,7 @@ public class PanelMain extends JPanel {
         JLabel lblCombNoobLvl = new JLabel("CombatLevel");
         JLabel lblCombNoTP = new JLabel("CombatNoTP");
         JLabel lblCombPKOnly = new JLabel("CombatPKOnly");
-
+        
         final JComboBox cmbGenPreEnab = new JComboBox(sTrueFalse); cmbGenPreEnab.setSelectedIndex(MainFrame.getIndex(String.valueOf(Config.genPrefix)).intValue());
         final JComboBox cmbGebStatsEnab = new JComboBox(sTrueFalse);
         final JComboBox cmbGenVerEnab = new JComboBox(sTrueFalse);
@@ -114,9 +114,8 @@ public class PanelMain extends JPanel {
             gbc.gridy = 26; add(lblCombNoTP, gbc);
             gbc.gridy = 27; add(lblCombPKOnly, gbc);
         
-        
         gbc.fill = GridBagConstraints.HORIZONTAL;
-
+        
         gbc.gridx = 1;
             gbc.gridy =  1; add(cmbGenPreEnab, gbc);
             gbc.gridy =  2; add(cmbGebStatsEnab, gbc);
@@ -143,7 +142,7 @@ public class PanelMain extends JPanel {
             gbc.gridy = 27; add(cmbCombPKOnly, gbc);
         
         gbc.gridy = 28; add(saveMain, gbc);
-
+        
         saveMain.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent arg0) {
                 JOptionPane.showMessageDialog(null, "This functionality is not yet finished :-)");
