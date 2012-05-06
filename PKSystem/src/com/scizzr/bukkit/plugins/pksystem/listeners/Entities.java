@@ -19,6 +19,7 @@ import com.scizzr.bukkit.plugins.pksystem.managers.Manager;
 import com.scizzr.bukkit.plugins.pksystem.util.MoreMath;
 import com.scizzr.bukkit.plugins.pksystem.util.MoreString;
 import com.scizzr.bukkit.plugins.pksystem.util.TombStone;
+import com.scizzr.bukkit.plugins.pksystem.util.Vault;
 
 public class Entities implements Listener {
     Main plugin;
@@ -52,20 +53,22 @@ public class Entities implements Listener {
             
             if (pDef == pAtt) { pAtt.sendMessage(Main.prefix + "You can't harm yourself"); e.setCancelled(true); return; }
             
-            if (Config.combSpawnEnabled == true && Manager.isRespawn(pDef) == true) {
-                pAtt.sendMessage(Main.prefix + "You can't attack " + pDef.getName() + " yet. They just spawned.");
-                e.setCancelled(true); return;
-            }
-            
-            if (Manager.getIndex(Manager.getPoints(pDef)) >= 0) {
-                if (Manager.isPK(pAtt) == false && !Manager.isCombat(pDef) && Config.combPkOnly == true) {
-                    pAtt.sendMessage(Main.prefix + "You must enter PK mode to kill players");
+            if (!Vault.hasPermission(pAtt, "override.combat")) {
+                if (Config.combSpawnEnabled == true && Manager.isRespawn(pDef) == true) {
+                    pAtt.sendMessage(Main.prefix + "You can't attack " + pDef.getName() + " yet. They just spawned.");
                     e.setCancelled(true); return;
                 }
                 
-                if (Config.combNoobEnabled && (pDef.getLevel() < Config.combNoobLevel && Manager.isCombat(pDef) == false)) {
-                    pAtt.sendMessage(Main.prefix + "You can't kill good players under level " + String.valueOf(Config.combNoobLevel));
-                    e.setCancelled(true); return;
+                if (Manager.getIndex(Manager.getPoints(pDef)) >= 0) {
+                    if (Manager.isPK(pAtt) == false && !Manager.isCombat(pDef) && Config.combPkOnly == true) {
+                        pAtt.sendMessage(Main.prefix + "You must enter PK mode to kill players");
+                        e.setCancelled(true); return;
+                    }
+                    
+                    if (Config.combNoobEnabled && (pDef.getLevel() < Config.combNoobLevel && Manager.isCombat(pDef) == false)) {
+                        pAtt.sendMessage(Main.prefix + "You can't kill good players under level " + String.valueOf(Config.combNoobLevel));
+                        e.setCancelled(true); return;
+                    }
                 }
             }
             

@@ -34,7 +34,6 @@ import com.scizzr.bukkit.plugins.pksystem.listeners.Entities;
 import com.scizzr.bukkit.plugins.pksystem.listeners.Players;
 import com.scizzr.bukkit.plugins.pksystem.managers.Manager;
 import com.scizzr.bukkit.plugins.pksystem.threads.Stats;
-import com.scizzr.bukkit.plugins.pksystem.threads.Update;
 import com.scizzr.bukkit.plugins.pksystem.util.MoreMath;
 import com.scizzr.bukkit.plugins.pksystem.util.TombStone;
 import com.scizzr.bukkit.plugins.pksystem.util.Vanish;
@@ -287,14 +286,18 @@ public class Main extends JavaPlugin {
                 p.chat("/pks help");
                 return true;
             } else if (args.length >= 1) {
-/**/
-                if (args[0].equalsIgnoreCase("update")) {
-                    new Thread(new Update("update", p, null)).start();
-                    suicide(null);
+                if (args[0].equalsIgnoreCase("debug")) {
+                    if (Vault.hasPermission(p, "debug")) {
+                        p.sendMessage("Points: " + Manager.getPoints(p));
+                        p.sendMessage("Rep: " + Manager.getReputation(p));
+                        p.sendMessage("Spawn: " + Manager.getSpawnTime(p));
+                        p.sendMessage("Farm: " + Manager.getFarmTime(p));
+                        p.sendMessage("Criminal: " + Manager.getCrim(p));
+                    } else {
+                        p.sendMessage(prefix + "You don't have permission to do that");
+                    }
                     return true;
-                }
-/**/
-                if (args[0].equalsIgnoreCase("help")) {
+                } else if (args[0].equalsIgnoreCase("help")) {
                     p.sendMessage(prefix + ChatColor.YELLOW + "/pks help " + ChatColor.RESET + ": Show this help message");
                     p.sendMessage(prefix + ChatColor.YELLOW + "/pks version " + ChatColor.RESET + ": Show PKSystem version");
                     
@@ -341,7 +344,15 @@ public class Main extends JavaPlugin {
                         return true;
                     }
                 } else if (args[0].equalsIgnoreCase("reload")) {
-                    if (args.length >= 2) {
+                    if (args.length == 1) {
+                        p.sendMessage(prefix + ChatColor.YELLOW + "/pks reload cfg-main " + ChatColor.RESET + ": Reload main config");
+                        p.sendMessage(prefix + ChatColor.YELLOW + "/pks reload cfg-eff " + ChatColor.RESET + ": Reload effects config");
+                        p.sendMessage(prefix + ChatColor.YELLOW + "/pks reload cfg-rep " + ChatColor.RESET + ": Reload reputation config");
+                        p.sendMessage(prefix + ChatColor.YELLOW + "/pks reload cfg-tomb " + ChatColor.RESET + ": Reload tomb config");
+                        p.sendMessage(prefix + ChatColor.YELLOW + "/pks reload data " + ChatColor.RESET + ": Reload player data list");
+                        p.sendMessage(prefix + ChatColor.YELLOW + "/pks reload points " + ChatColor.RESET + ": Reload points list");
+                        p.sendMessage(prefix + ChatColor.YELLOW + "/pks reload stones " + ChatColor.RESET + ": Reload stones list");
+                    } else if (args.length >= 2) {
                         if (args[1].equalsIgnoreCase("cfg-main") || args[1].equalsIgnoreCase("config-main")) {
                             if (Vault.hasPermission(p, "reload.config.main")) {
                                 ConfigMain.main();
@@ -378,10 +389,10 @@ public class Main extends JavaPlugin {
                                 p.sendMessage(prefix + "You don't have permission to do that");
                                 return true;
                             }
-                        } else if (args[1].equalsIgnoreCase("playerdata") || args[1].equalsIgnoreCase("opt")) {
+                        } else if (args[1].equalsIgnoreCase("playerdata") || args[1].equalsIgnoreCase("data")) {
                             if (Vault.hasPermission(p, "reload.playerdata")) {
                                 PlayerData.load();
-                                p.sendMessage(prefix + "Player options list reloaded");
+                                p.sendMessage(prefix + "Player data list reloaded");
                                 return true;
                             } else {
                                 p.sendMessage(prefix + "You don't have permission to do that");

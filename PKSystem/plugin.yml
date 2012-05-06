@@ -13,7 +13,7 @@ commands:
       /<command> reload cfg-effects
       /<command> reload cfg-tomb
       /<command> reload points
-      /<command> reload playeropt
+      /<command> reload playerdata
       /<command> reload stones
   pk:
     description: Toggle PK status
@@ -118,6 +118,7 @@ permissions:
     description: Grants the player the ability to reload all configurations and flat files
     children:
       pks.reload.config.*: true
+      pks.reload.playerdata: true
       pks.reload.points: true
       pks.reload.stones: true
   pks.reload.config.*:
@@ -145,6 +146,10 @@ permissions:
     default: false
     description: Reload PKSystem configuration (Tombstones)
     command: "/<command> reload cfg-tomb"
+  pks.reload.playerdata:
+    default: false
+    description: Reload PKSystem player data
+    command: "/<command> reload playerdata"
   pks.reload.points:
     default: false
     description: Reload PKSystem points
