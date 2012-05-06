@@ -1,4 +1,4 @@
-package com.scizzr.bukkit.plugins.pksystem.util;
+package com.scizzr.bukkit.plugins.pksystem.managers;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -14,17 +14,21 @@ import org.bukkit.entity.Player;
 
 import com.scizzr.bukkit.plugins.pksystem.Main;
 import com.scizzr.bukkit.plugins.pksystem.config.Config;
+import com.scizzr.bukkit.plugins.pksystem.util.MoreMath;
 
 @SuppressWarnings("unchecked")
 public class Manager {
     public static HashMap<String, Integer> points = new HashMap<String, Integer> ();
     public static HashMap<Integer, ChatColor> color = new HashMap<Integer, ChatColor> ();
     public static HashMap<Integer, String> name = new HashMap<Integer, String> ();
-    private static HashMap<Player, Integer> repTimer = new HashMap<Player, Integer> ();
-    private static HashMap<Player, Integer> pvpTimer = new HashMap<Player, Integer> ();
-    private static HashMap<Player, Player> lastTarg = new HashMap<Player, Player> ();
     private static HashMap<Player, Boolean> isPK = new HashMap<Player, Boolean> ();
     private static HashMap<Player, Boolean> isCrim = new HashMap<Player, Boolean> ();
+    private static HashMap<Player, Integer> farmTimer = new HashMap<Player, Integer> ();
+    private static HashMap<Player, Integer> pvpTimer = new HashMap<Player, Integer> ();
+    private static HashMap<Player, Integer> repTimer = new HashMap<Player, Integer> ();
+    private static HashMap<Player, Integer> spawnTimer = new HashMap<Player, Integer> ();
+ // Removed for now; might use this at a later time.
+    //private static HashMap<Player, Player> lastTarg = new HashMap<Player, Player> ();
     
     public static void main() {
         name.put(-4, "DEMON");      color.put(-4, ChatColor.DARK_RED);
@@ -193,7 +197,7 @@ public class Manager {
     
     public static void setPvPTime(Player p, Integer i) {
         if (Config.fmtCombEnabled == true) {
-            if (i == Config.pvpDuration && pvpTimer.get(p) == null) {
+            if (i == Config.combDuration && pvpTimer.get(p) == null) {
                 p.sendMessage(Main.prefix + Config.fmtCombEnter);
             } else if (i == 0) {
                 if (p != null) {
@@ -221,19 +225,48 @@ public class Manager {
         if (i > 0) {
             repTimer.put(p, i);
         } else {
-            repTimer.remove(p);
+            repTimer.put(p, 0);
         }
     }
     
-    public static Player getLastTarget(Player p) {
-        return lastTarg.get(p);
+    public static Integer getFarmTime(Player p) {
+        Integer isfarm = farmTimer.get(p);
+        
+        return isfarm != null ? isfarm : 0;
     }
     
-    public static void setLastTarget(Player p, Player pp) {
-        lastTarg.put(p, pp);
+    public static void setFarmTime(Player p, Integer i) {
+        if (i > 0) {
+            farmTimer.put(p, i);
+        } else {
+            farmTimer.put(p, 0);
+        }
     }
     
-    public static boolean getPK(Player p) {
+    public static Integer getSpawnTime(Player p) {
+        Integer isspawn = spawnTimer.get(p);
+        
+        return isspawn != null ? isspawn : 0;
+    }
+    
+    public static void setSpawnTime(Player p, Integer i) {
+        if (i > 0) {
+            spawnTimer.put(p, i);
+        } else {
+            spawnTimer.put(p, 0);
+        }
+    }
+    
+// Removed for now; might use this at a later time.
+    //public static Player getLastTarget(Player p) {
+    //    return lastTarg.get(p);
+    //}
+    
+    //public static void setLastTarget(Player p, Player pp) {
+    //    lastTarg.put(p, pp);
+    //}
+    
+    public static boolean isPK(Player p) {
         if (isPK.containsKey(p)) {
             return isPK.get(p);
         }
@@ -260,9 +293,11 @@ public class Manager {
         return getPvPTime(p) > 0;
     }
     
-    public static boolean isProtected(Player p) {
-        //if (p.isOp()) { return true; }
-        
-        return false;
+    public static boolean isFarm(Player p) {
+        return getFarmTime(p) + Config.repLimitDuration >= Config.repLimitAmount * Config.repLimitDuration;
+    }
+    
+    public static boolean isRespawn(Player p) {
+        return spawnTimer.get(p) > 0;
     }
 }

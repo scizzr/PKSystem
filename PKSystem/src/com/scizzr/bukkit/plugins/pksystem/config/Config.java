@@ -1,50 +1,52 @@
 package com.scizzr.bukkit.plugins.pksystem.config;
 
+import java.util.UUID;
+
 public class Config {
 // Config - Main
     public static boolean genPrefix = true;
     public static boolean genStats = true;
+    public static String  genUUID = UUID.randomUUID().toString();
     public static boolean genVerCheck = true;
-    public static boolean fmtCombEnabled = true;
+    public static boolean genAutoUpdate = false;
+    public static boolean fmtCombEnabled = false;
     public static String  fmtCombEnter = "You entered combat";
     public static String  fmtCombExit = "You exited combat";
-    public static boolean fmtDeathEnabled = true;
+    public static boolean fmtDeathEnabled = false;
     public static String  fmtDeathGood = "+a killed +d";
     public static String  fmtDeathEvil = "+a murdered +d";
     public static String  fmtPKEnter = "You are now in PK mode";
     public static String  fmtPKExit = "You have left PK mode";
-    public static boolean fmtDispName = true;
-    public static boolean fmtTabList = true;
-    public static boolean killMobsEnabled = true;
+    public static String  fmtPtsNoRew = "You earned no reputation for killing +d.";
+    public static boolean fmtDispName = false;
+    public static boolean fmtTabList = false;
+    public static boolean killMobsEnabled = false;
     public static Integer killMobsPoints = 1;
-    public static boolean killPkOff = true;
+    public static boolean killPkOff = false;
     public static boolean permAllowOps = true;
-    public static Integer pvpDuration = 30;
-    public static boolean pvpNoobEnabled = false;
-    public static Integer pvpNoobLevel = 5;
-    public static boolean pvpNoTP = true;
-    public static boolean pvpPkOnly = true;
-    public static boolean repSpecEnabled = true;
-    public static boolean repSpecReach = true;
-// + TODO
-//    public static boolean respawnProt = true;
-//    public static Integer respawnDur = 5;
-// - TODO
+    public static Integer combDuration = 30;
+    public static boolean combNoobEnabled = false;
+    public static Integer combNoobLevel = 5;
+    public static boolean combNoTP = false;
+    public static boolean combPkOnly = false;
+    public static boolean combSpawnEnabled = false;
+    public static Integer combSpawnDuration = 5;
     
 // Config - Effects
     public static boolean effInvisEnabled = false;
     public static Integer effInvisMin = 3;
     public static Integer effInvisMax = 16;
-    public static boolean effPotsEnabled = true;
-    public static boolean effSmokeCombat = true;
-    public static boolean effSmokeInPK = true;
-    public static boolean effSmokeInvis = true;
-    public static boolean effSpecHero = true;
-    public static boolean effSpecDemon = true;
-    public static boolean effSpecNeutral = true;
+    public static boolean effLightEnabled = false;
+    public static boolean effPotsEnabled = false;
+    public static boolean effSmokeCombat = false;
+    public static boolean effSmokeInPK = false;
+    public static boolean effSmokeInvis = false;
+    public static boolean effSpecHero = false;
+    public static boolean effSpecDemon = false;
+    public static boolean effSpecNeutral = false;
     
 // Config - Tombstones
-    public static boolean tombEnabled = true;
+    public static boolean tombEnabled = false;
     public static boolean tombLocked = true;
     public static String  behClaim = "break";
     public static boolean behPreserve = false;
@@ -69,4 +71,12 @@ public class Config {
     public static String  repDefBlu = "  -6,  -6,  -6,  -6,   0,   0,   0,   0,   0";
     public static String  repDefPur = "  -8,  -8,  -8,  -8,   0,   0,   0,   0,   0";
     public static String  repDefHer = " -10, -10, -10, -10,   0,   0,   0,   0,   0";
+    public static boolean repSpecEnabled = false;
+    public static boolean repSpecReach = false;
+    public static boolean repLimitEnabled = false;
+    public static Integer repLimitAmount = 5;
+    public static Integer repLimitDuration = 30;
+
+// Config - Skills
+    
 }

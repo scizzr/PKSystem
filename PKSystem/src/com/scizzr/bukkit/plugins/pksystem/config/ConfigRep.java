@@ -70,12 +70,13 @@ public class ConfigRep extends JavaPlugin {
         
         checkOption(config, "rep.special.enabled", Config.repSpecEnabled);      Config.repSpecEnabled = config.getBoolean("rep.special.enabled");
         checkOption(config, "rep.special.reach", Config.repSpecReach);          Config.repSpecReach = config.getBoolean("rep.special.reach");
+        checkOption(config, "rep.limit.enabled", Config.repLimitEnabled);       Config.repLimitEnabled = config.getBoolean("rep.limit.enabled");
+        checkOption(config, "rep.limit.amount", Config.repLimitAmount);         Config.repLimitAmount = config.getInt("rep.limit.amount");
+        checkOption(config, "rep.limit.duration", Config.repLimitDuration);     Config.repLimitDuration = config.getInt("rep.limit.duration");
         
         if (changed) {
-            config.options().header(
-                "PKSystem Configuration - Points"
-            );
-            try { config.save(file); } catch (Exception ex) { Main.log.info(Main.prefixConsole + "Failed to save configPoints.yml"); /*ex.printStackTrace();*/ }
+            config.options().header("PKSystem Configuration - Points");
+            try { config.save(file); } catch (Exception ex) { Main.suicide(ex); Main.log.info(Main.prefixConsole + "Failed to save configReputation.yml"); }
         }
     }
     

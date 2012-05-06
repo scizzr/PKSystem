@@ -15,13 +15,14 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerLoginEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
+import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
 
 import com.scizzr.bukkit.plugins.pksystem.Main;
 import com.scizzr.bukkit.plugins.pksystem.config.Config;
-import com.scizzr.bukkit.plugins.pksystem.config.PlayerOpt;
-import com.scizzr.bukkit.plugins.pksystem.threads.Website;
-import com.scizzr.bukkit.plugins.pksystem.util.Manager;
+import com.scizzr.bukkit.plugins.pksystem.config.PlayerData;
+import com.scizzr.bukkit.plugins.pksystem.managers.Manager;
+import com.scizzr.bukkit.plugins.pksystem.threads.Update;
 import com.scizzr.bukkit.plugins.pksystem.util.TombStone;
 import com.scizzr.bukkit.plugins.pksystem.util.Vault;
 
@@ -34,7 +35,7 @@ public class Players implements Listener {
     
     @EventHandler(priority = EventPriority.MONITOR)
     public void onPlayerLogin(final PlayerLoginEvent e) {
-        PlayerOpt.checkAll(e.getPlayer());
+        PlayerData.checkAll(e.getPlayer());
         
         if (Config.fmtDispName == true) {
             for (Player pp : Bukkit.getOnlinePlayers()) {
@@ -50,9 +51,10 @@ public class Players implements Listener {
         
         if (Manager.getPoints(p) == null) { Manager.setPoints(p, 0); }
         if (Manager.getRepTime(p) == null) { Manager.setRepTime(p, 0); }
+        if (Manager.getSpawnTime(p) == null) { Manager.setSpawnTime(p, 0); }
         
         if (Config.genVerCheck == true) {
-            new Thread(new Website("checkVersion", p)).start();
+            new Thread(new Update("check", p, null)).start();
         }
     }
     
@@ -73,10 +75,19 @@ public class Players implements Listener {
         
         Player p = e.getPlayer();
         if (Manager.isCombat(p)) {
-            if (Config.pvpNoTP == true) {
+            if (Config.combNoTP == true) {
                 p.sendMessage(Main.prefix + "You cannot teleport while in combat.");
                 e.setCancelled(true);
             }
+        }
+    }
+    
+    @EventHandler(priority = EventPriority.MONITOR)
+    public void onPlayerRespawn(final PlayerRespawnEvent e) {
+        Player p = e.getPlayer();
+        
+        if (Config.combSpawnEnabled == true) {
+            Manager.setSpawnTime(p, Config.combSpawnDuration);
         }
     }
     

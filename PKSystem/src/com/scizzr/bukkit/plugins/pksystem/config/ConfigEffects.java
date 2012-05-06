@@ -46,22 +46,21 @@ public class ConfigEffects extends JavaPlugin {
             Main.suicide(ex);
         }
         
-        checkOption(config, "effects.invis.enabled", Config.effInvisEnabled);   Config.effInvisEnabled = config.getBoolean("effects.invis.enabled");
-        checkOption(config, "effects.invis.min", Config.effInvisMin);           Config.effInvisMin = config.getInt("effects.invis.min");
-        checkOption(config, "effects.invis.max", Config.effInvisMax);           Config.effInvisMax = config.getInt("effects.invis.max");
-        checkOption(config, "effects.potions.enabled", Config.effPotsEnabled);  Config.effPotsEnabled = config.getBoolean("effects.potions.enabled");
-        checkOption(config, "effects.smoke.incombat", Config.effSmokeCombat);   Config.effSmokeCombat = config.getBoolean("effects.smoke.incombat");
-        checkOption(config, "effects.smoke.inpk", Config.effSmokeInPK);         Config.effSmokeInPK = config.getBoolean("effects.smoke.inpk");
-        checkOption(config, "effects.smoke.invis", Config.effSmokeInvis);       Config.effSmokeInvis = config.getBoolean("effects.smoke.invis");
-        checkOption(config, "effects.special.demon", Config.effSpecDemon);      Config.effSpecDemon = config.getBoolean("effects.special.demon");
-        checkOption(config, "effects.special.hero", Config.effSpecHero);        Config.effSpecHero = config.getBoolean("effects.special.hero");
-        checkOption(config, "effects.special.neutral", Config.effSpecNeutral);  Config.effSpecNeutral = config.getBoolean("effects.special.neutral");
+        checkOption(config, "effects.invis.enabled", Config.effInvisEnabled);       Config.effInvisEnabled = config.getBoolean("effects.invis.enabled");
+        checkOption(config, "effects.invis.min", Config.effInvisMin);               Config.effInvisMin = config.getInt("effects.invis.min");
+        checkOption(config, "effects.invis.max", Config.effInvisMax);               Config.effInvisMax = config.getInt("effects.invis.max");
+        checkOption(config, "effects.lightning.enabled", Config.effLightEnabled);   Config.effLightEnabled = config.getBoolean("effects.lightning.enabled");
+        checkOption(config, "effects.potions.enabled", Config.effPotsEnabled);      Config.effPotsEnabled = config.getBoolean("effects.potions.enabled");
+        checkOption(config, "effects.smoke.incombat", Config.effSmokeCombat);       Config.effSmokeCombat = config.getBoolean("effects.smoke.incombat");
+        checkOption(config, "effects.smoke.inpk", Config.effSmokeInPK);             Config.effSmokeInPK = config.getBoolean("effects.smoke.inpk");
+        checkOption(config, "effects.smoke.invis", Config.effSmokeInvis);           Config.effSmokeInvis = config.getBoolean("effects.smoke.invis");
+        checkOption(config, "effects.special.demon", Config.effSpecDemon);          Config.effSpecDemon = config.getBoolean("effects.special.demon");
+        checkOption(config, "effects.special.hero", Config.effSpecHero);            Config.effSpecHero = config.getBoolean("effects.special.hero");
+        checkOption(config, "effects.special.neutral", Config.effSpecNeutral);      Config.effSpecNeutral = config.getBoolean("effects.special.neutral");
         
         if (changed) {
-            config.options().header(
-                "PKSystem Configuration - Effects"
-            );
-            try { config.save(file); } catch (Exception ex) { Main.log.info(Main.prefixConsole + "Failed to save configEffects.yml"); /*ex.printStackTrace();*/ }
+            config.options().header("PKSystem Configuration - Effects");
+            try { config.save(file); } catch (Exception ex) { Main.suicide(ex); Main.log.info(Main.prefixConsole + "Failed to save configEffects.yml"); }
         }
     }
     

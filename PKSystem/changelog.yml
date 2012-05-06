@@ -17,3 +17,21 @@
 1.2.5-R1_b4
   Configuration GUI in progress (run PKSystem as if it were an executable)
   Fixed small bug in code resulting in big error.
+
+1.2.5-R1_b5
+  Minor vault-related code changes
+  Fixed a bug that occurred when a skeleton shoots a player. Not pretty.
+  Removed configuration GUI - too bulky and not really needed.
+
+1.2.5-R1_b6
+  Implemented UUID in stats to distinguish between servers if they rename or change IP address.
+  Added lightning strike effect when a player is killed by a player. (optional)
+  When a player respawns, they can't be killed for x seconds. (optional)
+  Reputation anti-farm (player's reputation can't change too often. (optional)
+  Changed '/pk' command to respect whether or not 'PK Only'-mode is enabled.
+  Miscellaneous fixes here and there. Slight code tidying.
+  Slightly altered the buff values. Not overpowered, but slightly more.
+  Changed the default configuration to have everything disabled and show no messages.
+  Fixed combat to not fire (enter/exit) when duration is set to 0.
+  Added an auto-updater. (optional) Updates require a manual reload or restart.
+  Fixed problem with p.showPlayer(pp); and p.hidePlayer(pp); for VanishNoPacket

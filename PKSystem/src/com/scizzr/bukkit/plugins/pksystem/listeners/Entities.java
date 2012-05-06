@@ -1,7 +1,6 @@
 package com.scizzr.bukkit.plugins.pksystem.listeners;
 
 
-import org.bukkit.ChatColor;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Monster;
 import org.bukkit.entity.Player;
@@ -16,9 +15,9 @@ import org.bukkit.event.entity.PlayerDeathEvent;
 
 import com.scizzr.bukkit.plugins.pksystem.Main;
 import com.scizzr.bukkit.plugins.pksystem.config.Config;
-import com.scizzr.bukkit.plugins.pksystem.util.Manager;
+import com.scizzr.bukkit.plugins.pksystem.managers.Manager;
 import com.scizzr.bukkit.plugins.pksystem.util.MoreMath;
-//import com.scizzr.bukkit.plugins.pksystem.util.MoreMath;
+import com.scizzr.bukkit.plugins.pksystem.util.MoreString;
 import com.scizzr.bukkit.plugins.pksystem.util.TombStone;
 
 public class Entities implements Listener {
@@ -40,25 +39,32 @@ public class Entities implements Listener {
             Player pAtt = null;
             
             if (att instanceof Projectile) {
-                pAtt = (Player) ((Projectile) att).getShooter();
+                Entity entAtt = ((Projectile) att).getShooter();
+                if (entAtt instanceof Player) {
+                    pAtt = (Player) ((Projectile) att).getShooter();
+                } else {
+                    return;
+                }
+                
             } else {
                 pAtt = (Player) att;
             }
             
             if (pDef == pAtt) { pAtt.sendMessage(Main.prefix + "You can't harm yourself"); e.setCancelled(true); return; }
             
-            if (Manager.isProtected(pDef) == true) {
+            if (Config.combSpawnEnabled == true && Manager.isRespawn(pDef) == true) {
+                pAtt.sendMessage(Main.prefix + "You can't attack " + pDef.getName() + " yet. They just spawned.");
                 e.setCancelled(true); return;
             }
             
             if (Manager.getIndex(Manager.getPoints(pDef)) >= 0) {
-                if (Manager.getPK(pAtt) == false && !Manager.isCombat(pDef) && Config.pvpPkOnly == true) {
+                if (Manager.isPK(pAtt) == false && !Manager.isCombat(pDef) && Config.combPkOnly == true) {
                     pAtt.sendMessage(Main.prefix + "You must enter PK mode to kill players");
                     e.setCancelled(true); return;
                 }
                 
-                if (Config.pvpNoobEnabled && (pDef.getLevel() < Config.pvpNoobLevel && Manager.isCombat(pDef) == false)) {
-                    pAtt.sendMessage(Main.prefix + "You can't kill good players under level " + String.valueOf(Config.pvpNoobLevel));
+                if (Config.combNoobEnabled && (pDef.getLevel() < Config.combNoobLevel && Manager.isCombat(pDef) == false)) {
+                    pAtt.sendMessage(Main.prefix + "You can't kill good players under level " + String.valueOf(Config.combNoobLevel));
                     e.setCancelled(true); return;
                 }
             }
@@ -67,11 +73,14 @@ public class Entities implements Listener {
                 Manager.setCrim(pAtt, true);
             }
             
-            Manager.setLastTarget(pAtt, pDef);
-            Manager.setLastTarget(pDef, pAtt);
+// Removed for now; might use this at a later time.
+            //Manager.setLastTarget(pAtt, pDef);
+            //Manager.setLastTarget(pDef, pAtt);
             
-            Manager.setPvPTime(pAtt, Config.pvpDuration);
-            Manager.setPvPTime(pDef, Config.pvpDuration);
+            if (Config.combDuration > 0) {
+                Manager.setPvPTime(pAtt, Config.combDuration);
+                Manager.setPvPTime(pDef, Config.combDuration);
+            }
         }
     }    
     
@@ -147,17 +156,26 @@ public class Entities implements Listener {
                 int a = Manager.getIndex(Manager.getPoints(pKill));
                 int d = Manager.getIndex(Manager.getPoints(pDead));
                 
-                Manager.setPoints(pKill, pKillPtsOld + (MoreMath.getKillPoints(a, d, true) * 1000));
+                
+                if (Manager.isFarm(pKill) == false) {
+                    Manager.setFarmTime(pKill, Manager.getFarmTime(pKill) + Config.repLimitDuration);
+                    Manager.setPoints(pKill, pKillPtsOld + (MoreMath.getKillPoints(a, d, true) * 1000));
+                } else {
+                    pKill.sendMessage(Main.prefix + MoreString.replaceVars(Config.fmtPtsNoRew, pKill, pDead));
+                }
+                
                 Manager.setPoints(pDead, pDeadPtsOld + (MoreMath.getKillPoints(d, a, false) * 1000));
                 
                 PlayerDeathEvent pde = (PlayerDeathEvent) e;
                 
+                if (Config.effLightEnabled == true) {
+                    pDead.getWorld().strikeLightningEffect(pDead.getLocation().add(0.0, 8.0, 0.0));
+                }
+                
                 if (Config.fmtDeathEnabled == true) {
                     String msg = (avenged) ? Config.fmtDeathGood : Config.fmtDeathEvil;
-                    msg = msg.replace("+a", pKill.getDisplayName() + ChatColor.RESET);
-                    msg = msg.replace("+d", pDead.getDisplayName() + ChatColor.RESET);
-                    msg = msg.replace("+p", String.valueOf(Math.abs(MoreMath.getKillPoints(a, d, true)*1000))) + ChatColor.RESET;
-                    msg = msg.replace("+r", String.valueOf(Math.abs(MoreMath.getKillPoints(a, d, true)))) + ChatColor.RESET;
+                    
+                    msg = MoreString.replaceVars(msg, pKill, pDead);
                     
                     pde.setDeathMessage(msg);
                 }

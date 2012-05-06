@@ -53,9 +53,12 @@ public class ConfigMain extends JavaPlugin {
         editOption(config, "pvp.pkonly", "combat.pkonly");
         editOption(config, "pvp", null);
         
+        
         checkOption(config, "general.prefix", Config.genPrefix);                Config.genPrefix = config.getBoolean("general.prefix");
         checkOption(config, "general.stats", Config.genStats);                  Config.genStats = config.getBoolean("general.stats");
+        checkOption(config, "general.uuid", Config.genUUID);                    Config.genUUID = config.getString("general.uuid");
         checkOption(config, "general.vercheck", Config.genVerCheck);            Config.genVerCheck = config.getBoolean("general.vercheck");
+        checkOption(config, "general.autoupdate", Config.genAutoUpdate);        Config.genAutoUpdate = config.getBoolean("general.autoupdate");
         
         checkOption(config, "format.combat.enabled", Config.fmtCombEnabled);    Config.fmtCombEnabled = config.getBoolean("format.combat.enabled");
         checkOption(config, "format.combat.enter", Config.fmtCombEnter);        Config.fmtCombEnter = config.getString("format.combat.enter");
@@ -74,11 +77,14 @@ public class ConfigMain extends JavaPlugin {
         
         checkOption(config, "permissions.allowops", Config.permAllowOps);       Config.permAllowOps = config.getBoolean("permissions.allowops");
         
-        checkOption(config, "combat.duration", Config.pvpDuration);                Config.pvpDuration = config.getInt("combat.duration");
-        checkOption(config, "combat.noobs.enabled", Config.pvpNoobEnabled);        Config.pvpNoobEnabled = config.getBoolean("combat.noobs.enabled");
-        checkOption(config, "combat.noobs.level", Config.pvpNoobLevel);            Config.pvpNoobLevel = config.getInt("combat.noobs.level");
-        checkOption(config, "combat.notp", Config.pvpNoTP);                        Config.pvpNoTP = config.getBoolean("combat.notp");
-        checkOption(config, "combat.pkonly", Config.pvpPkOnly);                    Config.pvpPkOnly = config.getBoolean("combat.pkonly");
+        checkOption(config, "combat.duration", Config.combDuration);            Config.combDuration = config.getInt("combat.duration");
+        checkOption(config, "combat.noobs.enabled", Config.combNoobEnabled);    Config.combNoobEnabled = config.getBoolean("combat.noobs.enabled");
+        checkOption(config, "combat.noobs.level", Config.combNoobLevel);        Config.combNoobLevel = config.getInt("combat.noobs.level");
+        checkOption(config, "combat.notp", Config.combNoTP);                    Config.combNoTP = config.getBoolean("combat.notp");
+        checkOption(config, "combat.pkonly", Config.combPkOnly);                Config.combPkOnly = config.getBoolean("combat.pkonly");
+        checkOption(config, "combat.spawn.enabled", Config.combSpawnEnabled);   Config.combSpawnEnabled = config.getBoolean("combat.spawn.enabled");
+        checkOption(config, "combat.spawn.duration", Config.combSpawnDuration); Config.combSpawnDuration = config.getInt("combat.spawn.duration");
+        
         
 //        checkOption(config, "respawn.protection", Config.respawnProt);          Config.respawnProt = config.getBoolean("respawn.protection");
 //        checkOption(config, "respawn.duration", Config.respawnDur);             Config.respawnDur = config.getInt("respawn.duration");
@@ -86,10 +92,8 @@ public class ConfigMain extends JavaPlugin {
         Main.prefix = (Config.genPrefix == true) ? Main.prefixMain : "";
         
         if (changed) {
-            config.options().header(
-                "PKSystem Configuration - Main"
-            );
-            try { config.save(file); } catch (Exception ex) { Main.log.info(Main.prefixConsole + "Failed to save configMain.yml"); /*ex.printStackTrace();*/ }
+            config.options().header("PKSystem Configuration - Main");
+            try { config.save(file); } catch (Exception ex) { Main.suicide(ex); Main.log.info(Main.prefixConsole + "Failed to save configMain.yml"); }
         }
     }
     

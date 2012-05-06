@@ -26,17 +26,19 @@ import com.scizzr.bukkit.plugins.pksystem.config.ConfigEffects;
 import com.scizzr.bukkit.plugins.pksystem.config.ConfigMain;
 import com.scizzr.bukkit.plugins.pksystem.config.ConfigRep;
 import com.scizzr.bukkit.plugins.pksystem.config.ConfigTomb;
-import com.scizzr.bukkit.plugins.pksystem.config.PlayerOpt;
+import com.scizzr.bukkit.plugins.pksystem.config.PlayerData;
 import com.scizzr.bukkit.plugins.pksystem.effects.PotionSwirl;
 import com.scizzr.bukkit.plugins.pksystem.effects.SmokeBomb;
 import com.scizzr.bukkit.plugins.pksystem.listeners.Blocks;
 import com.scizzr.bukkit.plugins.pksystem.listeners.Entities;
 import com.scizzr.bukkit.plugins.pksystem.listeners.Players;
-import com.scizzr.bukkit.plugins.pksystem.threads.Website;
-import com.scizzr.bukkit.plugins.pksystem.util.Manager;
+import com.scizzr.bukkit.plugins.pksystem.managers.Manager;
+import com.scizzr.bukkit.plugins.pksystem.threads.Stats;
+import com.scizzr.bukkit.plugins.pksystem.threads.Update;
 import com.scizzr.bukkit.plugins.pksystem.util.MoreMath;
-import com.scizzr.bukkit.plugins.pksystem.util.Vault;
 import com.scizzr.bukkit.plugins.pksystem.util.TombStone;
+import com.scizzr.bukkit.plugins.pksystem.util.Vanish;
+import com.scizzr.bukkit.plugins.pksystem.util.Vault;
 
 public class Main extends JavaPlugin {
     public static Logger log = Logger.getLogger("Minecraft");
@@ -49,7 +51,7 @@ public class Main extends JavaPlugin {
     boolean isScheduled = false;
     int lastTick;
     
-    public static File fileFolder, fileRep, fileConfigMain, fileConfigPoints, fileConfigTomb, fileConfigEffects, filePlayerOpt, fileStones;
+    public static File fileFolder, fileRep, fileConfigMain, fileConfigPoints, fileConfigTomb, fileConfigEffects, filePlayerData, fileStones;
     
     public static YamlConfiguration config;
 
@@ -61,8 +63,8 @@ public class Main extends JavaPlugin {
     
     public static String slash = os.equalsIgnoreCase("Windows") ? "\\" : "/";
     
-    static String[] f = Main.class.getProtectionDomain().getCodeSource().getLocation().getPath().replace("\\", "/").split("/");
-    public static String jar = f[f.length - 1];
+    public static File filePlug = new File(Main.class.getProtectionDomain().getCodeSource().getLocation().getPath().replace("\\", "/"));
+    public static String jar = filePlug.getAbsolutePath().split("/")[filePlug.getAbsolutePath().split("/").length - 1];
     
     public static int calY, calM, calD, calH, calI, calS; public static String calA;
     
@@ -94,24 +96,24 @@ public class Main extends JavaPlugin {
         }
         
         fileConfigMain = new File(getDataFolder() + slash + "configMain.yml");
-        ConfigMain.main();
-        
         fileConfigEffects = new File(getDataFolder() + slash + "configEffects.yml");
-        ConfigEffects.main();
-        
         fileConfigPoints = new File(getDataFolder() + slash + "configReputation.yml");
-        ConfigRep.main();
-        
         fileConfigTomb = new File(getDataFolder() + slash + "configTomb.yml");
-        ConfigTomb.main();
-        
-        filePlayerOpt = new File(getDataFolder() + slash + "playerOpt.yml");
-        PlayerOpt.load();
-        
+        filePlayerData = new File(getDataFolder() + slash + "playerData.yml");
         fileRep = new File(getDataFolder() + slash + "reputation.txt");
-        Manager.loadPoints();
-        
         fileStones = new File(getDataFolder() + slash + "tombstones.txt");
+        
+        // TODO : Remove 1.2.5-R1_b8
+        File filePlayerOpt = new File(getDataFolder() + slash + "playerOpt.yml");
+        if (filePlayerOpt.exists()) { filePlayerOpt.renameTo(filePlayerData); }
+        
+        ConfigMain.main();
+        ConfigEffects.main();
+        ConfigRep.main();
+        ConfigTomb.main();
+        PlayerData.load();
+        
+        Manager.loadPoints();
         TombStone.loadStones();
         
         Vault.setupPermissions();
@@ -122,7 +124,7 @@ public class Main extends JavaPlugin {
             log.info(prefixConsole + "Speed effects have been disabled because you are using NoCheat.");
         }
         
-        new Thread(new Website("postStats", null)).start();
+        new Thread(new Stats()).start();
         
         if (!isScheduled) {
             isScheduled = true;
@@ -144,10 +146,10 @@ public class Main extends JavaPlugin {
                             if (Config.effPotsEnabled == true) {
                                 for (Player ppp : Bukkit.getOnlinePlayers()) {
                                     if ((pp != ppp && 
-                                        PlayerOpt.getOpt(pp, "eff-pot-other").equalsIgnoreCase("true")) 
+                                        PlayerData.getOpt(pp, "options.eff-pot-other").equalsIgnoreCase("true")) 
                                         || 
                                         (pp == ppp && 
-                                        PlayerOpt.getOpt(pp, "eff-pot-self").equalsIgnoreCase("true"))) {
+                                        PlayerData.getOpt(pp, "options.eff-pot-self").equalsIgnoreCase("true"))) {
                                         PotionSwirl.playPotionEffect(pp,  ppp, MoreMath.intToColor(Manager.getIndex(Manager.getPoints(ppp))), 50);
                                     }
                                 }
@@ -157,7 +159,7 @@ public class Main extends JavaPlugin {
                                 if (Config.effSmokeCombat == true) {
                                     SmokeBomb.smokeCloudRandom(pp.getLocation().add(0, 0.0, 0), 2);
                                 }
-                            } else if (Manager.getPK(pp)) {
+                            } else if (Manager.isPK(pp)) {
                                 if (Config.effSmokeInPK == true) {
                                     SmokeBomb.smokeSingleRandom(pp.getLocation().add(0, 0.0, 0));
                                 }
@@ -176,9 +178,13 @@ public class Main extends JavaPlugin {
                                 Manager.setRepTime(pp, Manager.getRepTime(pp) + 1);
                             }
                             
-                            if (TombStone.getTimer(pp) > 0) {
-                                TombStone.setTimer(pp, TombStone.getTimer(pp) - 1);
+                            if (Config.repLimitEnabled == true) {
+                                Manager.setFarmTime(pp, Manager.getFarmTime(pp) - 1);
                             }
+                            
+                            Manager.setSpawnTime(pp, (Manager.getSpawnTime(pp) - 1));
+                            
+                            TombStone.setTimer(pp, (TombStone.getTimer(pp) - 1));
                         }
                         
 // Surrounded with try, catch for safety (don't spam my console, ConcurrentModificationException)
@@ -187,39 +193,39 @@ public class Main extends JavaPlugin {
                     
                     if (lastTick % 10 == 0) {
                         for (Player pp : Bukkit.getOnlinePlayers()) {
-                            if (Config.fmtTabList) { pp.setPlayerListName(Manager.getDisplayName(pp)); }
-                            if (Config.fmtDispName) { pp.setDisplayName(Manager.getDisplayName(pp)); }
+                            if (Config.fmtTabList == true) { pp.setPlayerListName(Manager.getDisplayName(pp)); }
+                            if (Config.fmtDispName == true) { pp.setDisplayName(Manager.getDisplayName(pp)); }
                             CraftPlayer cp = (CraftPlayer)pp;
                             
-                            if (Manager.isNeutral(pp) && !Manager.isCombat(pp) && Manager.getPK(pp) == false) {
+                            if (Manager.isNeutral(pp) && !Manager.isCombat(pp) && Manager.isPK(pp) == false) {
                                 if (Config.effSpecNeutral == true && noSpeed == false) {
-                                    cp.getHandle().netServerHandler.sendPacket(new Packet41MobEffect(cp.getEntityId(), new MobEffect(MobEffectList.FASTER_MOVEMENT.getId(), 39, 0)));
-                                    cp.getHandle().netServerHandler.sendPacket(new Packet41MobEffect(cp.getEntityId(), new MobEffect(MobEffectList.FASTER_DIG.getId(), 39, 0)));
+                                    cp.getHandle().netServerHandler.sendPacket(new Packet41MobEffect(cp.getEntityId(), new MobEffect(MobEffectList.FASTER_MOVEMENT.getId(), 39, 1)));
+                                    cp.getHandle().netServerHandler.sendPacket(new Packet41MobEffect(cp.getEntityId(), new MobEffect(MobEffectList.FASTER_DIG.getId(), 39, 1)));
                                 }
                             } else {
                                 if (Config.effSpecNeutral == true && noSpeed == false) {
-                                    cp.getHandle().netServerHandler.sendPacket(new Packet42RemoveMobEffect(cp.getEntityId(), new MobEffect(MobEffectList.FASTER_MOVEMENT.getId(), 0, 0)));
-                                    cp.getHandle().netServerHandler.sendPacket(new Packet42RemoveMobEffect(cp.getEntityId(), new MobEffect(MobEffectList.FASTER_DIG.getId(), 0, 0)));
+                                    cp.getHandle().netServerHandler.sendPacket(new Packet42RemoveMobEffect(cp.getEntityId(), new MobEffect(MobEffectList.FASTER_MOVEMENT.getId(), 0, 1)));
+                                    cp.getHandle().netServerHandler.sendPacket(new Packet42RemoveMobEffect(cp.getEntityId(), new MobEffect(MobEffectList.FASTER_DIG.getId(), 0, 1)));
                                 }
                             }
                             
                             if (Manager.isDemon(pp) && !Manager.isCombat(pp)) {
                                 if (Config.effSpecDemon == true && noSpeed == false) {
-                                    cp.getHandle().netServerHandler.sendPacket(new Packet41MobEffect(cp.getEntityId(), new MobEffect(MobEffectList.INCREASE_DAMAGE.getId(), 39, 0)));
+                                    cp.getHandle().netServerHandler.sendPacket(new Packet41MobEffect(cp.getEntityId(), new MobEffect(MobEffectList.INCREASE_DAMAGE.getId(), 39, 1)));
                                 }
                             } else {
                                 if (Config.effSpecDemon == true && noSpeed == false) {
-                                    cp.getHandle().netServerHandler.sendPacket(new Packet42RemoveMobEffect(cp.getEntityId(), new MobEffect(MobEffectList.INCREASE_DAMAGE.getId(), 0, 0)));
+                                    cp.getHandle().netServerHandler.sendPacket(new Packet42RemoveMobEffect(cp.getEntityId(), new MobEffect(MobEffectList.INCREASE_DAMAGE.getId(), 0, 1)));
                                 }
                             }
                             
                             if (Manager.isHero(pp) && !Manager.isCombat(pp)) {
                                 if (Config.effSpecHero == true && noSpeed == false) {
-                                    cp.getHandle().netServerHandler.sendPacket(new Packet41MobEffect(cp.getEntityId(), new MobEffect(MobEffectList.RESISTANCE.getId(), 39, 0)));
+                                    cp.getHandle().netServerHandler.sendPacket(new Packet41MobEffect(cp.getEntityId(), new MobEffect(MobEffectList.RESISTANCE.getId(), 39, 1)));
                                 }
                             } else {
                                 if (Config.effSpecHero == true && noSpeed == false) {
-                                    cp.getHandle().netServerHandler.sendPacket(new Packet42RemoveMobEffect(cp.getEntityId(), new MobEffect(MobEffectList.RESISTANCE.getId(), 0, 0)));
+                                    cp.getHandle().netServerHandler.sendPacket(new Packet42RemoveMobEffect(cp.getEntityId(), new MobEffect(MobEffectList.RESISTANCE.getId(), 0, 1)));
                                 }
                             }
                         }
@@ -231,20 +237,26 @@ public class Main extends JavaPlugin {
                             
                             if (Config.effInvisEnabled && Vault.hasPermission(pp, "eff.invis")) {
                                 if (pp.isSneaking() && !Manager.isCombat(pp)) {
-                                    cp.getHandle().netServerHandler.sendPacket(new Packet41MobEffect(cp.getEntityId(), new MobEffect(MobEffectList.INVISIBILITY.getId(), 39, 0)));
+                                    cp.getHandle().netServerHandler.sendPacket(new Packet41MobEffect(cp.getEntityId(), new MobEffect(MobEffectList.INVISIBILITY.getId(), 39, 1)));
                                     for (Player ppp : Bukkit.getOnlinePlayers()) {
                                         if (pp != ppp) {
                                             if (ppp.getLocation().distance(pp.getLocation()) >= Config.effInvisMin && ppp.getLocation().distance(pp.getLocation()) <= Config.effInvisMax && !Vault.hasPermission(ppp, "eff.seeinvis")) {
                                                 ppp.hidePlayer(pp);
                                             } else {
-                                                ppp.showPlayer(pp);
+                                                if (Vanish.canSee(pp, ppp) == true) {
+                                                    ppp.showPlayer(pp);
+                                                }
                                             }
                                         }
                                     }
                                 } else {
-                                    cp.getHandle().netServerHandler.sendPacket(new Packet42RemoveMobEffect(cp.getEntityId(), new MobEffect(MobEffectList.INVISIBILITY.getId(), 0, 0)));
+                                    cp.getHandle().netServerHandler.sendPacket(new Packet42RemoveMobEffect(cp.getEntityId(), new MobEffect(MobEffectList.INVISIBILITY.getId(), 0, 1)));
                                     for (Player ppp : Bukkit.getOnlinePlayers()) {
-                                        ppp.showPlayer(pp);
+                                        if (pp != ppp) {
+                                            if (Vanish.canSee(pp, ppp) == true) {
+                                                ppp.showPlayer(pp);
+                                            }
+                                        }
                                     }
                                 }
                             }
@@ -275,13 +287,24 @@ public class Main extends JavaPlugin {
                 p.chat("/pks help");
                 return true;
             } else if (args.length >= 1) {
+/**/
+                if (args[0].equalsIgnoreCase("update")) {
+                    new Thread(new Update("update", p, null)).start();
+                    suicide(null);
+                    return true;
+                }
+/**/
                 if (args[0].equalsIgnoreCase("help")) {
                     p.sendMessage(prefix + ChatColor.YELLOW + "/pks help " + ChatColor.RESET + ": Show this help message");
+                    p.sendMessage(prefix + ChatColor.YELLOW + "/pks version " + ChatColor.RESET + ": Show PKSystem version");
+                    
                     p.sendMessage(prefix + ChatColor.YELLOW + "/pk " + ChatColor.RESET + ": Toggle PK mode on|off");
+                    
                     p.sendMessage(prefix + ChatColor.YELLOW + "/rep " + ChatColor.RESET + ": See your rep");
                     p.sendMessage(prefix + ChatColor.YELLOW + "/rep [rep] " + ChatColor.RESET + ": Set your rep");
                     p.sendMessage(prefix + ChatColor.YELLOW + "/rep [player] " + ChatColor.RESET + ": See another player's rep");
                     p.sendMessage(prefix + ChatColor.YELLOW + "/rep [player] [rep] " + ChatColor.RESET + ": Set another player's rep");
+                    
                     p.sendMessage(prefix + ChatColor.YELLOW + "/pks reload cfg-main " + ChatColor.RESET + ": Reload main config");
                     p.sendMessage(prefix + ChatColor.YELLOW + "/pks reload cfg-eff " + ChatColor.RESET + ": Reload effects config");
                     p.sendMessage(prefix + ChatColor.YELLOW + "/pks reload cfg-rep " + ChatColor.RESET + ": Reload reputation config");
@@ -305,7 +328,7 @@ public class Main extends JavaPlugin {
 // Effects : Potions
                         if (args[1].equalsIgnoreCase("eff-pot-self") || args[1].equalsIgnoreCase("eff-pot-other")) {
                             if (args[2].equalsIgnoreCase("true") || args[2].equalsIgnoreCase("false")) {
-                                PlayerOpt.setOpt(p, args[1], args[2]);
+                                PlayerData.setOpt(p, args[1], args[2]);
                                 return true;
                             } else {
                                 p.sendMessage(prefix + ChatColor.YELLOW + args[2] + ChatColor.RESET + " is not a valid setting for " + ChatColor.YELLOW + args[1]);
@@ -355,9 +378,9 @@ public class Main extends JavaPlugin {
                                 p.sendMessage(prefix + "You don't have permission to do that");
                                 return true;
                             }
-                        } else if (args[1].equalsIgnoreCase("playeropt") || args[1].equalsIgnoreCase("opt")) {
-                            if (Vault.hasPermission(p, "reload.playeropt")) {
-                                PlayerOpt.load();
+                        } else if (args[1].equalsIgnoreCase("playerdata") || args[1].equalsIgnoreCase("opt")) {
+                            if (Vault.hasPermission(p, "reload.playerdata")) {
+                                PlayerData.load();
                                 p.sendMessage(prefix + "Player options list reloaded");
                                 return true;
                             } else {
@@ -387,14 +410,14 @@ public class Main extends JavaPlugin {
                                 Vault.hasPermission(p, "reload.config.effects") &&
                                 Vault.hasPermission(p, "reload.config.rep") &&
                                 Vault.hasPermission(p, "reload.config.tomb") &&
-                                Vault.hasPermission(p, "reload.playeropt") &&
+                                Vault.hasPermission(p, "reload.playerdata") &&
                                 Vault.hasPermission(p, "reload.points") &&
                                 Vault.hasPermission(p, "reload.stones")) {
                                     p.chat("/pks reload cfg-main");
                                     p.chat("/pks reload cfg-eff");
                                     p.chat("/pks reload cfg-rep");
                                     p.chat("/pks reload cfg-tomb");
-                                    p.chat("/pks reload playeropt");
+                                    p.chat("/pks reload playerdata");
                                     p.chat("/pks reload points");
                                     p.chat("/pks reload stones");
                                     return true;
@@ -476,8 +499,12 @@ public class Main extends JavaPlugin {
                 p.sendMessage(prefix + "That player does not exist");
             }
         } else if (commandLabel.equalsIgnoreCase("pk")) {
+            if (Config.combPkOnly == false) {
+                p.sendMessage(prefix + "You don't need to enable PK mode to fight.");
+                return true;
+            }
             if (Vault.hasPermission(p, "pk.toggle")) {
-                if (Manager.getPK(p) == true) {
+                if (Manager.isPK(p) == true) {
                     Manager.setPK(p, false);
                 } else {
                     Manager.setPK(p, true);

@@ -1,5 +1,5 @@
 name: PKSystem
-version: 1.2.5-R1_b4
+version: 1.2.5-R1_b6
 main: com.scizzr.bukkit.plugins.pksystem.Main
 authors:
   - Scizzr
@@ -82,6 +82,10 @@ permissions:
     default: false
     description: Grants the player the ability to toggle PK mode
     command: "/<command>"
+# Overrides
+  pks.override.combat:
+    default: false
+    description: Allows the player the ability to teleport while in combat
   # Reputation
   pks.rep.*:
     default: false

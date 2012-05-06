@@ -8,6 +8,7 @@ import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import com.scizzr.bukkit.plugins.pksystem.Main;
+import com.scizzr.bukkit.plugins.pksystem.config.Config;
 
 public class Vault extends JavaPlugin {
     public static Permission permissionHandler = null;
@@ -26,7 +27,7 @@ public class Vault extends JavaPlugin {
     }
     
     public static boolean hasPermission(Player p, String perm) {
-        if (p.isOp()) {
+        if (Config.permAllowOps == true && p.isOp()) {
             return true;
         }
         
