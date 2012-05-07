@@ -51,7 +51,7 @@ public class Entities implements Listener {
                 pAtt = (Player) att;
             }
             
-            if (pDef == pAtt) { pAtt.sendMessage(Main.prefix + "You can't harm yourself"); e.setCancelled(true); return; }
+            if (pDef == pAtt) { /*pAtt.sendMessage(Main.prefix + "You can't harm yourself");*/ e.setCancelled(true); return; }
             
             if (!Vault.hasPermission(pAtt, "override.combat")) {
                 if (Config.combSpawnEnabled == true && Manager.isRespawn(pDef) == true) {

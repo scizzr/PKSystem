@@ -1,5 +1,8 @@
 Changelog for anyone bored enough to open my jar. :-)
 
+1.2.5-R1_b7
+  Removed "You can't harm yourself" message; Will make configurable later.
+
 1.2.5-R1_b6
   Implemented UUID in stats to distinguish between servers if they rename or change IP address.
   Added lightning strike effect when a player is killed by a player. (optional)
