@@ -12,9 +12,11 @@ import org.bukkit.entity.Player;
 
 import com.scizzr.bukkit.plugins.pksystem.Main;
 import com.scizzr.bukkit.plugins.pksystem.config.Config;
-import com.scizzr.bukkit.plugins.pksystem.util.Vault;
 
 public class Update implements Runnable {
+    public static boolean updated = false;
+    public static String updver = null;
+    
     private String act; Object par1, par2;
     
     public Update(String act, Object par1, Object par2) {
@@ -34,7 +36,7 @@ public class Update implements Runnable {
     public static void check(Player p) {
         try {
             URL url = new URL(
-                String.format("http://www.scizzr.com/util/plugins/version.php?plug=" + Main.info.getName())
+                String.format("http://www.scizzr.com/plugins/version.php?plug=" + Main.info.getName())
             );
             
             URLConnection conn = url.openConnection();
@@ -46,10 +48,13 @@ public class Update implements Runnable {
                 String verNew = line.split("<br/>")[1];
                 String verCur = Main.info.getVersion().endsWith("+") ? Main.info.getVersion().substring(0, Main.info.getVersion().length()-1) : Main.info.getVersion();
                 if (!verNew.equalsIgnoreCase(verCur)) {
-                    if (p != null) {
-                        if (Vault.hasPermission(p, "newver")) {
-                            if (Config.genAutoUpdate == true) {
-                                new Thread(new Update("update", p, verNew)).start();
+                    if (Config.genAutoUpdate == true) {
+                        new Thread(new Update("update", p, verNew)).start();
+                    } else {
+                        if (p != null) {
+                            if (updated == true) {
+                                p.sendMessage(Main.prefix + "Version " + updver + " has been downloaded.");
+                                p.sendMessage(Main.prefix + "Reload or restart the server to finish updating.");
                             } else {
                                 p.sendMessage(Main.prefix + "Your version of " + Main.info.getName() + " is out of date.");
                                 p.sendMessage(Main.prefix + "Version " + verNew + " can be downloaded from:");
@@ -92,6 +97,8 @@ public class Update implements Runnable {
                 p.sendMessage(Main.prefix + "Version " + ver + " has been downloaded.");
                 p.sendMessage(Main.prefix + "Reload or restart the server to finish updating.");
             }
+            
+            updated = true;
         } catch (Exception ex) {
             Main.suicide(ex);
         }

@@ -1,14 +1,15 @@
 package com.scizzr.bukkit.plugins.pksystem.config;
 
-import java.util.UUID;
+import com.scizzr.bukkit.plugins.pksystem.util.UniqID;
 
 public class Config {
 // Config - Main
     public static boolean genPrefix = true;
     public static boolean genStats = true;
-    public static String  genUUID = UUID.randomUUID().toString();
+    public static String  genUniqID = UniqID.getUniqID();
     public static boolean genVerCheck = true;
     public static boolean genAutoUpdate = false;
+    public static boolean genErrorWeb = true;
     public static boolean fmtCombEnabled = false;
     public static String  fmtCombEnter = "You entered combat";
     public static String  fmtCombExit = "You exited combat";
@@ -76,7 +77,4 @@ public class Config {
     public static boolean repLimitEnabled = false;
     public static Integer repLimitAmount = 5;
     public static Integer repLimitDuration = 30;
-
-// Config - Skills
-    
 }

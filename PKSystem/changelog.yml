@@ -1,7 +1,13 @@
 Changelog for anyone bored enough to open my jar. :-)
 
-1.2.5-R1_b7
+1.2.5-R2_b1
+  CB 1.2.5 R2
   Removed "You can't harm yourself" message; Will make configurable later.
+  Changed UUID to not be configurable. Fixed UUID missing from stats URL.
+  Changed update mechanics; will update on server start as well as player login.
+    Will not update if it has already been updated. Will message the player this info.
+  Error stacks will be sent to my website for further inspection. (optional)
+    Using Base64 encoding; PHP sometimes fails without it.
 
 1.2.5-R1_b6
   Implemented UUID in stats to distinguish between servers if they rename or change IP address.

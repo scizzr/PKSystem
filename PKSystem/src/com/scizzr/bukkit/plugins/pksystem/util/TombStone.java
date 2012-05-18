@@ -50,6 +50,7 @@ public class TombStone {
             return true;
         } catch (Exception ex) {
             stones = (HashMap<String, String>) tmp.clone();
+            Main.suicide(ex);
             return false;
         }
     }
@@ -64,7 +65,7 @@ public class TombStone {
             writer.close();
             return true;
         } catch (Exception ex) {
-            ex.printStackTrace();
+            Main.suicide(ex);
             return false;
         }
     }

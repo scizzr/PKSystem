@@ -53,7 +53,7 @@ public class Players implements Listener {
         if (Manager.getRepTime(p) == null) { Manager.setRepTime(p, 0); }
         if (Manager.getSpawnTime(p) == null) { Manager.setSpawnTime(p, 0); }
         
-        if (Config.genVerCheck == true) {
+        if (Config.genVerCheck == true && Vault.hasPermission(p, "newver")) {
             new Thread(new Update("check", p, null)).start();
         }
     }

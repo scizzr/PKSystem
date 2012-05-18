@@ -11,7 +11,7 @@ public class Vanish {
             try {
                 return VanishNoPacket.canSee(hide, look);
             } catch (Exception ex) {
-                ex.printStackTrace();
+                Main.suicide(ex);
                 return false;
             }
         }

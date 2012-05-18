@@ -60,7 +60,12 @@ public class ConfigEffects extends JavaPlugin {
         
         if (changed) {
             config.options().header("PKSystem Configuration - Effects");
-            try { config.save(file); } catch (Exception ex) { Main.suicide(ex); Main.log.info(Main.prefixConsole + "Failed to save configEffects.yml"); }
+            try {
+                config.save(file);
+            } catch (Exception ex) {
+                Main.log.info(Main.prefixConsole + "Failed to save configEffects.yml");
+                Main.suicide(ex);
+            }
         }
     }
     

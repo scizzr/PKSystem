@@ -17,4 +17,12 @@ public class MoreString {
         
         return msg;
     }
+    
+    public static String stackToString(Throwable th) {
+        StringBuilder sb = new StringBuilder();
+        for (StackTraceElement ste : th.getStackTrace()) {
+            sb.append(ste.toString() + "\n");
+        }
+        return sb.toString();
+    }
 }

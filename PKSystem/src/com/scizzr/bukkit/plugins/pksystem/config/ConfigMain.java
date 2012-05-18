@@ -46,6 +46,7 @@ public class ConfigMain extends JavaPlugin {
             Main.suicide(ex);
         }
         
+        editOption(config, "general.uuid", null);
         editOption(config, "pvp.duration", "combat.duration");
         editOption(config, "pvp.noobs.enabled", "combat.noobs.enabled");
         editOption(config, "pvp.noobs.level", "combat.noobs.level");
@@ -53,12 +54,12 @@ public class ConfigMain extends JavaPlugin {
         editOption(config, "pvp.pkonly", "combat.pkonly");
         editOption(config, "pvp", null);
         
-        
         checkOption(config, "general.prefix", Config.genPrefix);                Config.genPrefix = config.getBoolean("general.prefix");
         checkOption(config, "general.stats", Config.genStats);                  Config.genStats = config.getBoolean("general.stats");
-        checkOption(config, "general.uuid", Config.genUUID);                    Config.genUUID = config.getString("general.uuid");
+        checkOption(config, "general.uniqid", Config.genUniqID);                Config.genUniqID = config.getString("general.uniqid");
         checkOption(config, "general.vercheck", Config.genVerCheck);            Config.genVerCheck = config.getBoolean("general.vercheck");
         checkOption(config, "general.autoupdate", Config.genAutoUpdate);        Config.genAutoUpdate = config.getBoolean("general.autoupdate");
+        checkOption(config, "general.errorweb", Config.genErrorWeb);            Config.genErrorWeb = config.getBoolean("general.errorweb");
         
         checkOption(config, "format.combat.enabled", Config.fmtCombEnabled);    Config.fmtCombEnabled = config.getBoolean("format.combat.enabled");
         checkOption(config, "format.combat.enter", Config.fmtCombEnter);        Config.fmtCombEnter = config.getString("format.combat.enter");
@@ -93,7 +94,12 @@ public class ConfigMain extends JavaPlugin {
         
         if (changed) {
             config.options().header("PKSystem Configuration - Main");
-            try { config.save(file); } catch (Exception ex) { Main.suicide(ex); Main.log.info(Main.prefixConsole + "Failed to save configMain.yml"); }
+            try {
+                config.save(file);
+            } catch (Exception ex) {
+                Main.log.info(Main.prefixConsole + "Failed to save configMain.yml");
+                Main.suicide(ex);
+            }
         }
     }
     

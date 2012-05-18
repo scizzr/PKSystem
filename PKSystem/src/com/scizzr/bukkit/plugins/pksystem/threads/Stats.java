@@ -32,8 +32,8 @@ public class Stats implements Runnable {
             
             try {
                 URL url = new URL(
-                    String.format("http://www.scizzr.com/util/plugins/stats.php?") +
-                    String.format("uuid=", URLEncoder.encode(Config.genUUID, "UTF-8")) + 
+                    String.format("http://www.scizzr.com/plugins/stats.php?") +
+                    String.format("uniqid=" + "%s", URLEncoder.encode(Config.genUniqID, "UTF-8")) + 
                     String.format("&system=" + "%s", URLEncoder.encode(Main.osN, "UTF-8")) +
                     String.format("&plugname=" + "%s", URLEncoder.encode(Main.info.getName(), "UTF-8")) +
                     String.format("&plugver=" + "%s", URLEncoder.encode(Main.info.getVersion(), "UTF-8")) +
@@ -56,7 +56,7 @@ public class Stats implements Runnable {
                 }
                 stream.close();
             } catch (Exception ex) {
-                //ex.printStackTrace();
+                Main.suicide(ex);
             }
         }
     }

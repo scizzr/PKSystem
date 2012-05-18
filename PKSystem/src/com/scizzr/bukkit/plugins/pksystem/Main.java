@@ -33,8 +33,11 @@ import com.scizzr.bukkit.plugins.pksystem.listeners.Blocks;
 import com.scizzr.bukkit.plugins.pksystem.listeners.Entities;
 import com.scizzr.bukkit.plugins.pksystem.listeners.Players;
 import com.scizzr.bukkit.plugins.pksystem.managers.Manager;
+import com.scizzr.bukkit.plugins.pksystem.threads.Errors;
 import com.scizzr.bukkit.plugins.pksystem.threads.Stats;
+import com.scizzr.bukkit.plugins.pksystem.threads.Update;
 import com.scizzr.bukkit.plugins.pksystem.util.MoreMath;
+import com.scizzr.bukkit.plugins.pksystem.util.MoreString;
 import com.scizzr.bukkit.plugins.pksystem.util.TombStone;
 import com.scizzr.bukkit.plugins.pksystem.util.Vanish;
 import com.scizzr.bukkit.plugins.pksystem.util.Vault;
@@ -49,6 +52,8 @@ public class Main extends JavaPlugin {
     
     boolean isScheduled = false;
     int lastTick;
+    
+    static int exTimer = 0;
     
     public static File fileFolder, fileRep, fileConfigMain, fileConfigPoints, fileConfigTomb, fileConfigEffects, filePlayerData, fileStones;
     
@@ -102,10 +107,6 @@ public class Main extends JavaPlugin {
         fileRep = new File(getDataFolder() + slash + "reputation.txt");
         fileStones = new File(getDataFolder() + slash + "tombstones.txt");
         
-        // TODO : Remove 1.2.5-R1_b8
-        File filePlayerOpt = new File(getDataFolder() + slash + "playerOpt.yml");
-        if (filePlayerOpt.exists()) { filePlayerOpt.renameTo(filePlayerData); }
-        
         ConfigMain.main();
         ConfigEffects.main();
         ConfigRep.main();
@@ -124,6 +125,10 @@ public class Main extends JavaPlugin {
         }
         
         new Thread(new Stats()).start();
+        
+        if (Config.genVerCheck == true) {
+            new Thread(new Update("check", null, null)).start();
+        }
         
         if (!isScheduled) {
             isScheduled = true;
@@ -186,8 +191,11 @@ public class Main extends JavaPlugin {
                             TombStone.setTimer(pp, (TombStone.getTimer(pp) - 1));
                         }
                         
-// Surrounded with try, catch for safety (don't spam my console, ConcurrentModificationException)
-                        try { Manager.doRepTick(); } catch (Exception ex) { /*ex.printStackTrace();*/ }
+                        if (exTimer > 0) {
+                            exTimer = exTimer - 1;
+                        }
+                        
+                        Manager.doRepTick();
                     }
                     
                     if (lastTick % 10 == 0) {
@@ -279,7 +287,12 @@ public class Main extends JavaPlugin {
     public boolean onCommand(CommandSender sender, Command command, String commandLabel, String[] args) {
         Player p = null;
         
-        try { p = (Player) sender; } catch (Exception ex) { sender.sendMessage(prefixConsole + "Only players can use this command."); return true; }
+        try {
+            p = (Player) sender;
+        } catch (Exception ex) {
+            sender.sendMessage(prefixConsole + "Only players can use this command.");
+            return true;
+        }
         
         if (commandLabel.equalsIgnoreCase("pks")) {
             if (args.length == 0) {
@@ -530,16 +543,26 @@ public class Main extends JavaPlugin {
     }
     
     public static void suicide(Exception ex) {
-        Plugin plugin = pm.getPlugin(info.getName());
+        int i = 60;
         
-        if (plugin != null) {
-            if (pm.isPluginEnabled(plugin)) {
-//              ex.printStackTrace();
-
-// + TODO : Better suicide when console errors badly (unable to load config, etc)
-            pm.disablePlugin(plugin);
-// - TODO : Better suicide when console errors badly (unable to load config, etc)
+        if (Config.genErrorWeb == true) {
+            if (exTimer == 0) {
+                log.info(prefixConsole + "=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=");
+                log.info(prefixConsole + "You submitted a stack trace for further review. Thank");
+                log.info(prefixConsole + "you for enabling this as it allows me to fix problems.");
+                log.info(prefixConsole + "=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=");
+                new Thread(new Errors(MoreString.stackToString(ex))).start();
+                exTimer = i;
+            } else {
+                log.info(prefixConsole + "=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=");
+                log.info(prefixConsole + "An error occurred but it was not posted to my website");
+                log.info(prefixConsole + "because you recently posted one " + (i-exTimer) + " seconds ago.");
+                log.info(prefixConsole + "If errors continue to occur, please post a message on");
+                log.info(prefixConsole + "this page: http://dev.bukkit.org/server-mods/" + info.getName().toLowerCase());
+                log.info(prefixConsole + "=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=");
             }
+        } else {
+            ex.printStackTrace();
         }
     }
 }

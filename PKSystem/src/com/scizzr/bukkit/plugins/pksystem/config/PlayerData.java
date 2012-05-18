@@ -47,7 +47,9 @@ public class PlayerData {
     public static String getOpt(Player p, String o) {
         try {
             config.load(Main.filePlayerData);
-        } catch (Exception ex) { /* ex.printStackTrace(); */ }
+        } catch (Exception ex) {
+            Main.suicide(ex);
+        }
         
         String val = config.getString(p.getName() + "." + o);
         
@@ -69,7 +71,12 @@ public class PlayerData {
             
             if (changed) {
                 config.options().header("PKSystem Configuration - Main");
-                try { config.save(file); } catch (Exception ex) { Main.suicide(ex); Main.log.info(Main.prefixConsole + "Failed to save configMain.yml"); }
+                try {
+                    config.save(file);
+                } catch (Exception ex) {
+                    Main.log.info(Main.prefixConsole + "Failed to save configMain.yml");
+                    Main.suicide(ex);
+                }
             }
         } catch (Exception ex) {
             Main.suicide(ex);
@@ -80,7 +87,11 @@ public class PlayerData {
         if (!config.isSet(p.getName() + "." + opt)) {
             config.set(p.getName() + "." + opt, def);
             changed = true;
-            try { config.save(Main.filePlayerData); } catch (Exception ex) { Main.suicide(ex); }
+            try {
+                config.save(Main.filePlayerData);
+            } catch (Exception ex) {
+                Main.suicide(ex);
+            }
         }
     }
     
@@ -91,7 +102,9 @@ public class PlayerData {
                 config.set(p.getName() + "." + nodeOld, null);
             }
             config.set(nodeOld, null);
-            try { config.save(Main.filePlayerData); } catch (Exception ex) {
+            try {
+                config.save(Main.filePlayerData);
+            } catch (Exception ex) {
                 Main.suicide(ex);
             }
         }

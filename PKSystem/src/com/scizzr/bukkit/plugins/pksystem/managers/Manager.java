@@ -8,6 +8,7 @@ import java.text.DecimalFormat;
 import java.util.HashMap;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -25,7 +26,7 @@ public class Manager {
     private static HashMap<Player, Boolean> isCrim = new HashMap<Player, Boolean> ();
     private static HashMap<Player, Integer> farmTimer = new HashMap<Player, Integer> ();
     private static HashMap<Player, Integer> pvpTimer = new HashMap<Player, Integer> ();
-    private static HashMap<Player, Integer> repTimer = new HashMap<Player, Integer> ();
+    private static ConcurrentHashMap<Player, Integer> repTimer = new ConcurrentHashMap<Player, Integer> ();
     private static HashMap<Player, Integer> spawnTimer = new HashMap<Player, Integer> ();
  // Removed for now; might use this at a later time.
     //private static HashMap<Player, Player> lastTarg = new HashMap<Player, Player> ();
@@ -72,6 +73,7 @@ public class Manager {
             return true;
         } catch (Exception ex) {
             points = (HashMap<String, Integer>) tmp.clone();
+            Main.suicide(ex);
             return false;
         }
     }
@@ -86,6 +88,7 @@ public class Manager {
             writer.close();
             return true;
         } catch (Exception ex) {
+            Main.suicide(ex);
             return false;
         }
     }
@@ -99,7 +102,7 @@ public class Manager {
                 setPvPTime(pp, get-1);
             }
         } catch (Exception ex) {
-            //ex.printStackTrace();
+            Main.suicide(ex);
         }
     }
     
