@@ -1,5 +1,8 @@
 Changelog for anyone bored enough to open my jar. :-)
 
+1.2.5-R2_b2
+  Fixed connection error. (was using localhost)
+
 1.2.5-R2_b1
   CB 1.2.5 R2
   Removed "You can't harm yourself" message; Will make configurable later.
