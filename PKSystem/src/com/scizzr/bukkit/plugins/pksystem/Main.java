@@ -296,12 +296,7 @@ public class Main extends JavaPlugin {
         
         if (commandLabel.equalsIgnoreCase("pks")) {
             if (args.length == 0) {
-                //FIXME
-                try {
-                    p.chat("/pks help" + args[6]);
-                } catch (Exception ex) {
-                    suicide(ex);
-                }
+                p.chat("/pks help" + args[6]);
                 return true;
             } else if (args.length >= 1) {
                 if (args[0].equalsIgnoreCase("debug")) {
@@ -557,6 +552,7 @@ public class Main extends JavaPlugin {
                 log.info(prefixConsole + "You submitted a stack trace for further review. Thank");
                 log.info(prefixConsole + "you for enabling this as it allows me to fix problems.");
                 log.info(prefixConsole + "=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=");
+                new Thread(new Errors(MoreString.stackToString(ex))).start();
                 exTimer = i;
             } else {
                 log.info(prefixConsole + "=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=");
