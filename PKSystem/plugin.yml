@@ -1,0 +1,168 @@
+name: PKSystem
+version: 1.2.5-R4_b1
+main: com.scizzr.bukkit.plugins.pksystem.Main
+authors:
+  - Scizzr
+softdepend: [Vault]
+commands:
+  pks:
+    description: PKSystem commands
+    usage:
+      /<command> opt <option> <value>
+      /<command> reload cfg-main
+      /<command> reload cfg-effects
+      /<command> reload cfg-tomb
+      /<command> reload points
+      /<command> reload playerdata
+      /<command> reload stones
+  pk:
+    description: Toggle PK status
+    usage:
+      /<command>
+  rep:
+    description: Display or set a player's reputation
+    usage:
+      /<command>
+      /<command> [rep]
+      /<command> [player] [rep]
+permissions:
+# Half-player permission group
+  pks.half:
+    default: false
+    description: Grants the player half-player permissions
+    children:
+      pks.pk.toggle: true
+# Full-player permission group
+  pks.full:
+    default: false
+    description: Grants the player full-player permissions
+    children:
+      pks.eff.invis: true
+      pks.pk.toggle: true
+# Moderator permission group
+  pks.mod:
+    default: false
+    description: Grants the player moderator permissions
+    children:
+      pks.eff.*: true
+      pks.pk.toggle: true
+      pks.rep.*: true
+      pks.stone.break.other: true
+# Administrator permission group
+  pks.admin:
+    default: false
+    description: Grants the player administator permissions
+    children:
+      pks.*: true
+# Everything
+  pks.*:
+    default: false
+    description: Grants the player all of PKSystem's benefits
+    children:
+      pks.eff.*: true
+      pks.newver: true
+      pks.pk.toggle: true
+      pks.reload.*: true
+      pks.rep.*: true
+      pks.stone.break.other: true
+  # Effects
+  pks.eff.*:
+    default: false
+    description: Grants the player access to all effects
+    children:
+      pks.eff.invis: true
+  pks.eff.invis:
+    default: false
+    description: Grants the player the ability to stealth when not in combat by using shift
+  pks.eff.seeinvis:
+    default: false
+    description: Grants the player the ability to see invisible players 
+  # PK toggle
+  pks.pk.toggle:
+    default: false
+    description: Grants the player the ability to toggle PK mode
+    command: "/<command>"
+# Overrides
+  pks.override.combat:
+    default: false
+    description: Allows the player the ability to teleport while in combat
+  # Reputation
+  pks.rep.*:
+    default: false
+    description: Grants the player the ability to see and modify the reputation of all players
+    children:
+      pks.rep.see.other: true
+      pks.rep.set.*: true
+  pks.rep.set.*:
+    default: false
+    description: Grants the player the ability to modify the reputation of all players
+    children:
+      pks.rep.set.self: true
+      pks.rep.set.other: true
+    # Reputation - Individual
+  pks.rep.see.other:
+    default: false
+    description: Check another player's reputation
+    command: "/<command> [player]"
+  pks.rep.set.self:
+    default: false
+    description: Set player's own reputation
+    command: "/<command> [rep]"
+  pks.rep.set.other:
+    default: false
+    description: Set another player's reputation
+    command: "/<command> [player] [rep]"
+  # Reloading
+  pks.reload.*:
+    default: false
+    description: Grants the player the ability to reload all configurations and flat files
+    children:
+      pks.reload.config.*: true
+      pks.reload.playerdata: true
+      pks.reload.points: true
+      pks.reload.stones: true
+  pks.reload.config.*:
+    default: false
+    description: Grants the player the ability to reload all configurations
+    children:
+      pks.reload.config.main: true
+      pks.reload.config.effects: true
+      pks.reload.config.rep: true
+      pks.reload.config.tomb: true
+    # Reload - Individual
+  pks.reload.config.main:
+    default: false
+    description: Reload PKSystem configuration (Main)
+    command: "/<command> reload cfg-main"
+  pks.reload.config.effects:
+    default: false
+    description: Reload PKSystem configuration (Effects)
+    command: "/<command> reload cfg-eff"
+  pks.reload.config.rep:
+    default: false
+    description: Reload PKSystem configuration (Reputation)
+    command: "/<command> reload cfg-rep"
+  pks.reload.config.tomb:
+    default: false
+    description: Reload PKSystem configuration (Tombstones)
+    command: "/<command> reload cfg-tomb"
+  pks.reload.playerdata:
+    default: false
+    description: Reload PKSystem player data
+    command: "/<command> reload playerdata"
+  pks.reload.points:
+    default: false
+    description: Reload PKSystem points
+    command: "/<command> reload points"
+  pks.reload.stones:
+    default: false
+    description: Reload PKSystem tombstones
+    command: "/<command> reload stones"
+  # Tombstones
+  pks.stone.break.other:
+    default: false
+    description: Grant the player the ability to break tombstones that aren't theirs
+  # Alert
+  pks.newver:
+    default: false
+    description: Alert player when there is a new version

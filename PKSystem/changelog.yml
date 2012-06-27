@@ -1,0 +1,65 @@
+Ideas
+  When Attacker comes near Defender, send Defender a message. (optional)
+  /pks debug
+  pks.override.combat - overide combat lock and allow TP
+  pks.override.pk - overide PVP checks and allow PVP
+
+Changelog for anyone bored enough to open my jar. :-)
+
+1.2.5-R4_b1
+  CB 1.2.5-R4
+  Fixed error submissions. (GET string in URL was too long; using POST now)
+
+1.2.5-R2_b2
+  Fixed connection error. (was using localhost)
+
+1.2.5-R2_b1
+  CB 1.2.5 R2
+  Removed "You can't harm yourself" message; Will make configurable later.
+  Changed UUID to not be configurable. Fixed UUID missing from stats URL.
+  Changed update mechanics; will update on server start as well as player login.
+    Will not update if it has already been updated. Will message the player this info.
+  Error stacks will be sent to my website for further inspection. (optional)
+    Using Base64 encoding; PHP sometimes fails without it.
+
+1.2.5-R1_b6
+  Implemented UUID in stats to distinguish between servers if they rename or change IP address.
+  Added lightning strike effect when a player is killed by a player. (optional)
+  When a player respawns, they can't be killed for x seconds. (optional)
+  Reputation anti-farm. (player's reputation can't change too often) (optional)
+  Changed '/pk' command to respect whether or not 'PK Only'-mode is enabled.
+  Miscellaneous fixes here and there. Slight code tidying.
+  Slightly altered the buff values. Not overpowered, but slightly more.
+  Changed the default configuration to have everything disabled and show no messages.
+  Fixed combat to not fire (enter/exit) when duration is set to 0.
+  Added an auto-updater. (optional) Updates require a manual reload or restart.
+  Fixed problem with p.showPlayer(pp); and p.hidePlayer(pp); for VanishNoPacket.
+  Added '/pks debug' command and 'pks.debug' permission node to see debug info.
+  Added 'pks.override.combat' permission node to skip enter-combat checks.
+  Added 'pks.reload.playerdata' permission node.. Forgot that one.
+  Changed playerOpt to playerData to leave room for future additions.
+
+1.2.5-R1_b5
+  Minor vault-related code changes
+  Fixed a bug that occurred when a skeleton shoots a player. Not pretty.
+  Removed configuration GUI - too bulky and not really needed.
+
+1.2.5-R1_b4
+  Configuration GUI in progress (run PKSystem as if it were an executable)
+  Fixed small bug in code resulting in big error.
+
+1.2.5-R1_b3
+  Ability for players to change options. /pks opt <opt> <val>
+  Changed player options. Uses a single YML file now.
+
+1.2.5-R1_b2
+  Stats changed a tiny bit. Using plugin name instead of JAR name.
+  Command to see plugin version. /pks version
+
+1.2.5-R1_b1b
+  Temporary 'fix' for servers using NoCheat and experiencing players being 'pulled back' due to speed effect.
+    Speed effect will disable itself on servers using NoCheat.
+
+1.2.5-R1_b1
+  CB 1.2.5 R1
+  Initial release
