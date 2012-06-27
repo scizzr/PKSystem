@@ -296,7 +296,7 @@ public class Main extends JavaPlugin {
         
         if (commandLabel.equalsIgnoreCase("pks")) {
             if (args.length == 0) {
-                p.chat("/pks help" + args[6]);
+                p.chat("/pks help");
                 return true;
             } else if (args.length >= 1) {
                 if (args[0].equalsIgnoreCase("debug")) {
