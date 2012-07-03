@@ -35,7 +35,7 @@ public class PlayerData {
     }
     
     public static void setOpt(Player p, String o, String v) {
-        config.set(p.getName() + "." + o, v);
+        config.set(p.getName() + ".options." + o, v);
         
         try {
             config.save(Main.filePlayerData);
