@@ -102,7 +102,7 @@ public class Manager {
                 setPvPTime(pp, get-1);
             }
         } catch (Exception ex) {
-            Main.suicide(ex);
+            /* No Spam */
         }
     }
     
