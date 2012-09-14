@@ -39,7 +39,7 @@ public class MoreMath {
         if (i == -2)    return 0xff7700;
         if (i == -1)    return 0xffff00;
         if (i ==  0)    return 0xffffff;
-        if (i ==  1)    return 0x7777ff;
+        if (i ==  1)    return 0x00ffff;
         if (i ==  2)    return 0x0000ff;
         if (i ==  3)    return 0xff00ff;
         if (i ==  4)    return 0x770077;

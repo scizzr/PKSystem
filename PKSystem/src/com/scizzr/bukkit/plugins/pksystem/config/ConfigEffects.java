@@ -57,6 +57,7 @@ public class ConfigEffects extends JavaPlugin {
         checkOption(config, "effects.special.demon", Config.effSpecDemon);          Config.effSpecDemon = config.getBoolean("effects.special.demon");
         checkOption(config, "effects.special.hero", Config.effSpecHero);            Config.effSpecHero = config.getBoolean("effects.special.hero");
         checkOption(config, "effects.special.neutral", Config.effSpecNeutral);      Config.effSpecNeutral = config.getBoolean("effects.special.neutral");
+        checkOption(config, "effects.nameplates", Config.effNameplates);            Config.effNameplates = config.getBoolean("effects.nameplates");
         
         if (changed) {
             config.options().header("PKSystem Configuration - Effects");

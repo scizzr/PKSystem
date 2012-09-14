@@ -45,6 +45,7 @@ public class Config {
     public static boolean effSpecHero = false;
     public static boolean effSpecDemon = false;
     public static boolean effSpecNeutral = false;
+    public static boolean effNameplates = false;
     
 // Config - Tombstones
     public static boolean tombEnabled = false;

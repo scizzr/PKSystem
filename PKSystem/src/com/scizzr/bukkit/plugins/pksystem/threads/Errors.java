@@ -11,7 +11,7 @@ import org.bukkit.Bukkit;
 
 import com.scizzr.bukkit.plugins.pksystem.Main;
 import com.scizzr.bukkit.plugins.pksystem.config.Config;
-import com.scizzr.bukkit.plugins.pksystem.util.base64.*;
+import com.scizzr.bukkit.plugins.pksystem.util.base64.Base64;
 
 public class Errors implements Runnable {
     String err;
@@ -62,7 +62,7 @@ public class Errors implements Runnable {
             stream.close();
         } catch (Exception ex) {
             Main.log.info(Main.prefixConsole + "Stack trace submission failed.");
-            ex.printStackTrace();
+            //ex.printStackTrace();
         }
     }
 }

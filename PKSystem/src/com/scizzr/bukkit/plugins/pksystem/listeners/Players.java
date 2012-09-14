@@ -23,6 +23,7 @@ import com.scizzr.bukkit.plugins.pksystem.config.Config;
 import com.scizzr.bukkit.plugins.pksystem.config.PlayerData;
 import com.scizzr.bukkit.plugins.pksystem.managers.Manager;
 import com.scizzr.bukkit.plugins.pksystem.threads.Update;
+import com.scizzr.bukkit.plugins.pksystem.util.Misc;
 import com.scizzr.bukkit.plugins.pksystem.util.TombStone;
 import com.scizzr.bukkit.plugins.pksystem.util.Vault;
 
@@ -47,7 +48,7 @@ public class Players implements Listener {
     
     @EventHandler(priority = EventPriority.MONITOR)
     public void onPlayerJoin(final PlayerJoinEvent e) {
-        Player p = e.getPlayer();
+        final Player p = e.getPlayer();
         
         if (Manager.getPoints(p) == null) { Manager.setPoints(p, 0); }
         if (Manager.getRepTime(p) == null) { Manager.setRepTime(p, 0); }
@@ -56,6 +57,19 @@ public class Players implements Listener {
         if (Config.genVerCheck == true && Vault.hasPermission(p, "newver")) {
             new Thread(new Update("check", p, null)).start();
         }
+        
+        // [+] Name colors!
+        Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(Main.plugin, new Runnable() {
+            public void run() {
+                for (Player pp : Bukkit.getServer().getOnlinePlayers()) {
+                    if (pp != p) {
+                        Misc.setName(pp, p, Manager.getDisplayName(p));
+                        Misc.setName(p, pp, Manager.getDisplayName(pp));
+                    }
+                }
+            }
+        }, 10L);
+        // [-] Name colors!
     }
     
     @EventHandler(priority = EventPriority.MONITOR)
@@ -84,11 +98,26 @@ public class Players implements Listener {
     
     @EventHandler(priority = EventPriority.MONITOR)
     public void onPlayerRespawn(final PlayerRespawnEvent e) {
-        Player p = e.getPlayer();
+        final Player p = e.getPlayer();
         
         if (Config.combSpawnEnabled == true) {
             Manager.setSpawnTime(p, Config.combSpawnDuration);
         }
+        
+        // [+] Name colors!
+        Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(Main.plugin, new Runnable() {
+            public void run() {
+                if (Config.effNameplates == true) {
+                    for (Player pp : Bukkit.getServer().getOnlinePlayers()) {
+                        if (pp != p) {
+                            Misc.setName(p, pp, Manager.getDisplayName(pp));
+                            Misc.setName(pp, p, Manager.getDisplayName(p));
+                        }
+                    }
+                }
+            }
+        }, 10L);
+        // [-] Name colors!
     }
     
     @EventHandler(priority = EventPriority.MONITOR)

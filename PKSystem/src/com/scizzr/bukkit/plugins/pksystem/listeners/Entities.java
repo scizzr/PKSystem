@@ -135,7 +135,9 @@ public class Entities implements Listener {
                 pKill = ((Player) eKill).getPlayer();
             } else if (eKill instanceof Projectile) {
                 Projectile projectile = (Projectile)damageEvent.getDamager();
-                pKill = (Player) projectile.getShooter();
+                if (projectile.getShooter() instanceof Player) {
+                    pKill = (Player) projectile.getShooter();
+                }
             }
             
             if (pKill != null) {
@@ -182,11 +184,11 @@ public class Entities implements Listener {
                     
                     pde.setDeathMessage(msg);
                 }
-                
-                if (Config.tombEnabled == true) {
-                    TombStone.addTombstone(pDead, pKill, e.getDrops());
-                    e.getDrops().clear();
-                }
+            }
+            
+            if (Config.tombEnabled == true) {
+                TombStone.addTombstone(pDead, pKill != null ? pKill.getName() : eKill.getType().name(), e.getDrops());
+                e.getDrops().clear();
             }
         }
     }

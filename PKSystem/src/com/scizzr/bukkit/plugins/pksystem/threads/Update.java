@@ -10,7 +10,6 @@ import java.net.URLConnection;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
-import com.scizzr.bukkit.plugins.pksystem.threads.Update;
 import com.scizzr.bukkit.plugins.pksystem.Main;
 import com.scizzr.bukkit.plugins.pksystem.config.Config;
 
@@ -74,7 +73,8 @@ public class Update implements Runnable {
             }
             stream.close();
         } catch (Exception ex) {
-            Main.suicide(ex);
+            //Main.suicide(ex);
+            ex.printStackTrace();
         }
     }
     

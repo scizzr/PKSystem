@@ -55,7 +55,7 @@ public class Main extends JavaPlugin {
     
     static int exTimer = 0;
     
-    public static File fileFolder, fileRep, fileConfigMain, fileConfigPoints, fileConfigTomb, fileConfigEffects, filePlayerData, fileStones;
+    public static File dataFolder, fileRep, fileConfigMain, fileConfigPoints, fileConfigTomb, fileConfigEffects, filePlayerData, fileStones;
     
     public static YamlConfiguration config;
 
@@ -75,6 +75,7 @@ public class Main extends JavaPlugin {
     boolean noSpeed = false;
     
     public void onEnable() {
+        dataFolder = getDataFolder();
         info = getDescription();
         
         prefixConsole = "[" + info.getName() + "] ";
@@ -87,12 +88,10 @@ public class Main extends JavaPlugin {
         
         plugin = pm.getPlugin(info.getName());
         
-        fileFolder = getDataFolder();
-        
-        if (!fileFolder.exists()) {
+        if (!dataFolder.exists()) {
             log.info(prefixConsole + "Missing plugin folder. Making a new one");
             try {
-                fileFolder.mkdir();
+                dataFolder.mkdir();
             } catch (Exception ex) {
                 log.info(prefixConsole + "Error making the config folder");
                 suicide(ex);
@@ -120,8 +119,9 @@ public class Main extends JavaPlugin {
         log.info(prefixConsole + "Permissions done");
         
         if (pm.getPlugin("NoCheat") != null) {
-            noSpeed = true;
-            log.info(prefixConsole + "Speed effects have been disabled because you are using NoCheat.");
+            noSpeed = true; log.info(prefixConsole + "Speed effects have been disabled because you are using NoCheat.");
+        } else if (pm.getPlugin("NoCheatPlus") != null) {
+            noSpeed = true; log.info(prefixConsole + "Speed effects have been disabled because you are using NoCheatPlus.");
         }
         
         new Thread(new Stats()).start();
@@ -149,11 +149,12 @@ public class Main extends JavaPlugin {
                         for (Player pp : Bukkit.getOnlinePlayers()) {
                             if (Config.effPotsEnabled == true) {
                                 for (Player ppp : Bukkit.getOnlinePlayers()) {
-                                    if ((pp != ppp && 
-                                        PlayerData.getOpt(pp, "options.eff-pot-other").equalsIgnoreCase("true")) 
+                                    String effPotSelf = PlayerData.getOpt(pp, "options.eff-pot-self");
+                                    String effPotOther = PlayerData.getOpt(pp, "options.eff-pot-other");
+                                    
+                                    if ((pp != ppp && effPotOther != null && effPotOther.equalsIgnoreCase("true"))
                                         || 
-                                        (pp == ppp && 
-                                        PlayerData.getOpt(pp, "options.eff-pot-self").equalsIgnoreCase("true"))) {
+                                        (pp == ppp && effPotSelf != null && effPotSelf.equalsIgnoreCase("true"))) {
                                         PotionSwirl.playPotionEffect(pp,  ppp, MoreMath.intToColor(Manager.getIndex(Manager.getPoints(ppp))), 50);
                                     }
                                 }
@@ -246,6 +247,11 @@ public class Main extends JavaPlugin {
                                 if (pp.isSneaking() && !Manager.isCombat(pp)) {
                                     cp.getHandle().netServerHandler.sendPacket(new Packet41MobEffect(cp.getEntityId(), new MobEffect(MobEffectList.INVISIBILITY.getId(), 39, 1)));
                                     for (Player ppp : Bukkit.getOnlinePlayers()) {
+                                        
+                                        // [+] Fix for "Cannot calculate distance between two worlds" bug
+                                        if (ppp.getWorld() != pp.getWorld()) { return; }
+                                        // [-] Fix for "Cannot calculate distance between two worlds" bug
+                                        
                                         if (pp != ppp) {
                                             if (ppp.getLocation().distance(pp.getLocation()) >= Config.effInvisMin && ppp.getLocation().distance(pp.getLocation()) <= Config.effInvisMax && !Vault.hasPermission(ppp, "eff.seeinvis")) {
                                                 ppp.hidePlayer(pp);
@@ -311,9 +317,6 @@ public class Main extends JavaPlugin {
                     }
                     return true;
                 } else if (args[0].equalsIgnoreCase("help")) {
-                    p.sendMessage(prefix + ChatColor.YELLOW + "/pks help " + ChatColor.RESET + ": Show this help message");
-                    p.sendMessage(prefix + ChatColor.YELLOW + "/pks version " + ChatColor.RESET + ": Show PKSystem version");
-                    
                     p.sendMessage(prefix + ChatColor.YELLOW + "/pk " + ChatColor.RESET + ": Toggle PK mode on|off");
                     
                     p.sendMessage(prefix + ChatColor.YELLOW + "/rep " + ChatColor.RESET + ": See your rep");
@@ -321,13 +324,11 @@ public class Main extends JavaPlugin {
                     p.sendMessage(prefix + ChatColor.YELLOW + "/rep [player] " + ChatColor.RESET + ": See another player's rep");
                     p.sendMessage(prefix + ChatColor.YELLOW + "/rep [player] [rep] " + ChatColor.RESET + ": Set another player's rep");
                     
-                    p.sendMessage(prefix + ChatColor.YELLOW + "/pks reload cfg-main " + ChatColor.RESET + ": Reload main config");
-                    p.sendMessage(prefix + ChatColor.YELLOW + "/pks reload cfg-eff " + ChatColor.RESET + ": Reload effects config");
-                    p.sendMessage(prefix + ChatColor.YELLOW + "/pks reload cfg-rep " + ChatColor.RESET + ": Reload reputation config");
-                    p.sendMessage(prefix + ChatColor.YELLOW + "/pks reload cfg-tomb " + ChatColor.RESET + ": Reload tomb config");
-                    p.sendMessage(prefix + ChatColor.YELLOW + "/pks reload options " + ChatColor.RESET + ": Reload player options list");
-                    p.sendMessage(prefix + ChatColor.YELLOW + "/pks reload points " + ChatColor.RESET + ": Reload points list");
-                    p.sendMessage(prefix + ChatColor.YELLOW + "/pks reload stones " + ChatColor.RESET + ": Reload stones list");
+                    p.sendMessage(prefix + ChatColor.YELLOW + "/pks help " + ChatColor.RESET + ": Show this help message");
+                    p.sendMessage(prefix + ChatColor.YELLOW + "/pks version " + ChatColor.RESET + ": Show PKSystem version");
+                    p.sendMessage(prefix + ChatColor.YELLOW + "/pks reload [what] " + ChatColor.RESET + ": Reload a YML file");
+                    
+                    p.sendMessage(prefix + ChatColor.YELLOW + "/pks opt [what] [value] " + ChatColor.RESET + ": Per-player options");
                     return true;
                 } else if (args[0].equalsIgnoreCase("ver") || args[0].equalsIgnoreCase("version")) {
                     p.sendMessage(prefix + "Version " + info.getVersion() + " on " + osN); return true;
@@ -365,6 +366,7 @@ public class Main extends JavaPlugin {
                         p.sendMessage(prefix + ChatColor.YELLOW + "/pks reload data " + ChatColor.RESET + ": Reload player data list");
                         p.sendMessage(prefix + ChatColor.YELLOW + "/pks reload points " + ChatColor.RESET + ": Reload points list");
                         p.sendMessage(prefix + ChatColor.YELLOW + "/pks reload stones " + ChatColor.RESET + ": Reload stones list");
+                        p.sendMessage(prefix + ChatColor.YELLOW + "/pks reload all " + ChatColor.RESET + ": Reload all files");
                     } else if (args.length >= 2) {
                         if (args[1].equalsIgnoreCase("cfg-main") || args[1].equalsIgnoreCase("config-main")) {
                             if (Vault.hasPermission(p, "reload.config.main")) {

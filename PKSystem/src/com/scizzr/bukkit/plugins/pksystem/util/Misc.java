@@ -1,8 +1,14 @@
 package com.scizzr.bukkit.plugins.pksystem.util;
 
+import net.minecraft.server.EntityPlayer;
+import net.minecraft.server.Packet;
+import net.minecraft.server.Packet20NamedEntitySpawn;
+
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
+import org.bukkit.craftbukkit.entity.CraftPlayer;
+import org.bukkit.entity.Player;
 
 public class Misc {
     public static Location getSafe(Location loc) {
@@ -30,5 +36,17 @@ public class Misc {
         }
         
         return diff;
+    }
+    
+    public static void setName(Player look, Player is, String name) {
+        String oldName = is.getName();
+        EntityPlayer isE = ((CraftPlayer)is).getHandle();
+        
+        isE.name = name;
+        
+        Packet spawn = new Packet20NamedEntitySpawn(isE);
+        ((CraftPlayer)look).getHandle().netServerHandler.sendPacket(spawn);
+        
+        isE.name = oldName;
     }
 }

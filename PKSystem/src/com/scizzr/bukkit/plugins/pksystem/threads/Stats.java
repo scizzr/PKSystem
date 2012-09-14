@@ -56,7 +56,8 @@ public class Stats implements Runnable {
                 }
                 stream.close();
             } catch (Exception ex) {
-                Main.suicide(ex);
+                //Main.suicide(ex);
+                ex.printStackTrace();
             }
         }
     }

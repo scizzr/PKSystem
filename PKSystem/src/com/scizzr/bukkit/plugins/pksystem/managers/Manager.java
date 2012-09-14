@@ -10,17 +10,19 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
 import com.scizzr.bukkit.plugins.pksystem.Main;
 import com.scizzr.bukkit.plugins.pksystem.config.Config;
+import com.scizzr.bukkit.plugins.pksystem.util.Misc;
 import com.scizzr.bukkit.plugins.pksystem.util.MoreMath;
 
 @SuppressWarnings("unchecked")
 public class Manager {
     public static HashMap<String, Integer> points = new HashMap<String, Integer> ();
-    public static HashMap<Integer, ChatColor> color = new HashMap<Integer, ChatColor> ();
+    public static HashMap<Integer, String> color = new HashMap<Integer, String> ();
     public static HashMap<Integer, String> name = new HashMap<Integer, String> ();
     private static HashMap<Player, Boolean> isPK = new HashMap<Player, Boolean> ();
     private static HashMap<Player, Boolean> isCrim = new HashMap<Player, Boolean> ();
@@ -32,15 +34,15 @@ public class Manager {
     //private static HashMap<Player, Player> lastTarg = new HashMap<Player, Player> ();
     
     public static void main() {
-        name.put(-4, "DEMON");      color.put(-4, ChatColor.DARK_RED);
-        name.put(-3, "RED");        color.put(-3, ChatColor.RED);
-        name.put(-2, "ORANGE");     color.put(-2, ChatColor.GOLD);
-        name.put(-1, "YELLOW");     color.put(-1, ChatColor.YELLOW);
-        name.put( 0, "WHITE");      color.put( 0, ChatColor.WHITE);
-        name.put( 1, "LIGHT BLUE"); color.put( 1, ChatColor.AQUA);
-        name.put( 2, "BLUE");       color.put( 2, ChatColor.BLUE);
-        name.put( 3, "PURPLE");     color.put( 3, ChatColor.LIGHT_PURPLE);
-        name.put( 4, "HERO");       color.put( 4, ChatColor.DARK_PURPLE);
+        name.put(-4, "DEMON");      color.put(-4, ChatColor.DARK_RED.toString());
+        name.put(-3, "RED");        color.put(-3, ChatColor.RED.toString());
+        name.put(-2, "ORANGE");     color.put(-2, ChatColor.GOLD.toString());
+        name.put(-1, "YELLOW");     color.put(-1, ChatColor.YELLOW.toString());
+        name.put( 0, "WHITE");      color.put( 0, ChatColor.WHITE.toString());
+        name.put( 1, "LIGHT BLUE"); color.put( 1, ChatColor.AQUA.toString());
+        name.put( 2, "BLUE");       color.put( 2, ChatColor.BLUE.toString());
+        name.put( 3, "PURPLE");     color.put( 3, ChatColor.LIGHT_PURPLE.toString());
+        name.put( 4, "HERO");       color.put( 4, ChatColor.DARK_PURPLE.toString());
     }
     
     public static boolean loadPoints() {
@@ -148,6 +150,15 @@ public class Manager {
         
         if (!getIndex(pPtsOld).equals(getIndex(pPtsNew))) {
             p.sendMessage(Main.prefix + "Your reputation is now " + getFormattedReputation(p));
+            
+            if (Config.effNameplates == true) {
+                for (Player pp : Bukkit.getServer().getOnlinePlayers()) {
+                    if (pp != p) {
+                        Misc.setName(p, pp, Manager.getDisplayName(pp));
+                        Misc.setName(pp, p, Manager.getDisplayName(p));
+                    }
+                }
+            }
         }
     }
     
@@ -169,13 +180,13 @@ public class Manager {
     }
     
     public static String getFormattedReputation(Player p) {
-        ChatColor col = color.get(getIndex(getPoints(p)));
+        String col = color.get(getIndex(getPoints(p)));
         
         return col + name.get(getIndex(getPoints(p))) + ChatColor.WHITE + " (" + getReputation(p) + ")";
     }
     
     public static String getName(Player p) {
-        ChatColor col = color.get(getIndex(getPoints(p)));
+        String col = color.get(getIndex(getPoints(p)));
         
         return col + p.getDisplayName();
     }

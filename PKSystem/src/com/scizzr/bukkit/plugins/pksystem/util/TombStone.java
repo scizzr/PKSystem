@@ -70,13 +70,13 @@ public class TombStone {
         }
     }
     
-    public static void addTombstone(Player pDead, Player pKill, List<ItemStack> list) {
+    public static void addTombstone(Player pDead, String killer, List<ItemStack> list) {
         Location loc = pDead.getLocation();
         
         Location safe = Misc.getSafe(loc);
         
         String key = pDead.getWorld().getName() + ":" + safe.getBlockX() + ":" + safe.getBlockY() + ":" + safe.getBlockZ();
-        String info = "false:" + pDead.getName() + ":" + pKill.getName();
+        String info = "false:" + pDead.getName() + ":" + killer;
         String drops = "";
         
         for (int i = 0; i < list.size(); i++) {
@@ -118,7 +118,7 @@ public class TombStone {
             Sign sign = (Sign) signBlock.getState();
             sign.setLine(0, pDead.getName());
             sign.setLine(1, "was slain by");
-            sign.setLine(2, pKill.getName());
+            sign.setLine(2, killer);
             sign.setLine(3, date);
             sign.update();
             
